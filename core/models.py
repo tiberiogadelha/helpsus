@@ -6,6 +6,12 @@ from django.contrib.auth.models import BaseUserManager, AbstractUser
 
 # Create your models here.
 
+GENDER_CHOICES = (
+        ('f', 'Feminino'),
+        ('m', 'Masculino'),
+        ('o', 'Outro')
+    )
+
 class Base(models.Model):
     created_at = models.DateField('Created at', auto_now_add=True)
     updated_at = models.DateField('Updated at', auto_now=True)
@@ -45,12 +51,9 @@ Realiza função antes de inserir
 #    instance.slug = slugify(instance.name)
 #signals.pre_save.connect(user_pre_save, sender=User)
 
+
 class Patient(Base):
-    GENDER_CHOICES = (
-        ('f', 'Feminino'),
-        ('m', 'Masculino'),
-        ('o', 'Outro')
-    )
+
     name = models.CharField('Nome', max_length=140)
     birth_date = models.DateField('Data de nascimento')
     gender = models.CharField('Sexo', max_length=1, choices=GENDER_CHOICES)
@@ -93,7 +96,8 @@ class Role(models.Model):
             return self.name
         return f'{self.name}/{self.f_name}'
 
-class UsuarioManager(BaseUserManager):
+
+class UserManager(BaseUserManager):
     use_in_migrations = True
 
     def _create_user(self, email, password, **extra_fields):
@@ -107,11 +111,29 @@ class UsuarioManager(BaseUserManager):
 
     def create_user(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_superuser', False)
-        return self.cre
+        extra_fields.setdefault('is_staff', False)
+        return self._create_user(email, password, **extra_fields)
 
-class UsuarioCustom(AbstractUser):
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_enabled', True)
+
+        return self._create_user(email, password, **extra_fields)
+
+
+
+class Employee(AbstractUser):
     email = models.EmailField('Email', unique=True)
+    first_name = models.CharField('Primeiro nome', max_length=50)
+    last_name = models.CharField('Sobrenome', max_length=250)
+    birth_date = models.DateField('Data de nascimento')
+    gender = models.CharField('Sexo', max_length=1, choices=GENDER_CHOICES, default='o')
+    is_enabled = models.BooleanField('Está habilitado', default=False)
+    role = models.ForeignKey('core.Role', verbose_name='Cargo', null=True, on_delete=models.CASCADE)
+    conselho = models.CharField('Conselho', max_length=120, default='')
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name']
-    objects = UsuarioManager()
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'birth_date', 'gender']
+    objects = UserManager()
+

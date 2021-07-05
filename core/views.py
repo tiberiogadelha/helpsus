@@ -19,6 +19,24 @@ class IndexView(TemplateView):
         
         
         return super().get(request, *args, **kwargs)
+
+class signUpView(TemplateView):
+    template_name = 'sign-up.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(signUpView, self).get_context_data(**kwargs)
+        context['form'] = UserModelForm()
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        form = UserModelForm(request.POST)
+        if (form.is_valid()):
+            messages.success(request, 'Usuário registrado com sucesso! Aguarde avaliação!')
+            form = UserModelForm()
+            return redirect('index')
+        else:
+            messages.error(request, 'Problemas no formulário!')
+            
 '''
 def index(request):
     form = LoginForm(request.POST or None)

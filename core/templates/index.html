@@ -10,24 +10,41 @@
     <script src="../static/js/script.js"></script>
 </head>
 <body>
-    <div class='container'>
+    <div class='form-group'>
         <center>
-            <h1>Login</h1>
             {% bootstrap_messages %}
             <form action="{% url 'index' %}" method="post" class="form" autocomplete="off">
                 {% csrf_token %}
-                {% bootstrap_form loginForm %}
-                <a id='openPasswordModal' href='#' data-toggle="modal" data-target="#passwordModal">Esqueceu sua senha?</a>
-                {% buttons %}
+                <h1>Login</h1> 
+                <p> 
+                    <label for="email">Email:</label>
+                    <input id="email" name="email" required="required" type="email" placeholder="seuemail@mail.com"/>
+                </p>
+                
+                <p> 
+                    <label for="password">Senha: </label>
+                    <input id="password" name="password" required="required" type="password" placeholder="*****" /> 
+                </p>
+                
+                
+                <p> 
+                    {% buttons %}
                     <button type="submit" class="btn btn-primary">Entrar</button>
-                {% endbuttons %}
+                    {% endbuttons %}
+                </p>
+                
+                <p class="link">
+                    Ainda não tem conta?
+                    <a href="{% url 'signUp' %}">Cadastre-se</a>
+                </p>
+        
+    
+                <a id='openPasswordModal' href='#' data-toggle="modal" data-target="#passwordModal">Esqueceu sua senha?</a>
   
             </form>
 
-            <button type="submit"><a href="{% url 'signUp' %}">Criar conta</a></button>
-            
-    
-
+        
+        
             <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.db.models import fields
-from .models import User, UsuarioCustom
+from .models import Employee, User
 from django.core.mail.message import EmailMessage
 
 class LoginForm(forms.Form):
@@ -24,6 +24,8 @@ class RecoverPassword(forms.Form):
         )
         mail.send()
 
+
+'''
 class UserModelForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     re_password = forms.CharField(widget=forms.PasswordInput)
@@ -32,12 +34,14 @@ class UserModelForm(forms.ModelForm):
         model = User
         fields = ['name', 'email', 'password', 're_password', 'gender', 'birth_date', 'conselho', 'role']
 
-class CustomUsuarioForm(UserCreationForm):
+'''
+
+class UserModelForm(UserCreationForm):
 
     class Meta:
-        model = UsuarioCustom
-        fields = ('first_name', 'last_name')
-        #labels = {'username': 'E-amil'}
+        model = Employee
+        fields = ('username', 'password1', 'password2', 'first_name', 'last_name', 'gender', 'birth_date', 'role', 'conselho')
+        labels = {'username': 'Email'}
 
         def save(self, commit=True):
             user = super().save(commit=False)

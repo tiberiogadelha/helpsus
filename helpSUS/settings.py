@@ -151,4 +151,4 @@ EMAIL_HOST_PASSWORD =
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-#AUTH_USER_MODEL = 'core.UsuarioCustom' --Valor do modelo usuario novo
+AUTH_USER_MODEL = 'core.Employee' 

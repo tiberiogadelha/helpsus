@@ -1,0 +1,12 @@
+[
+    {
+        "model": "core.Role",
+        "pk": 1,
+        "fields": {
+            "cod": "dir",
+            "name": "Diretor",
+            "f_name": "Diretora"
+        }
+    }
+]
+  

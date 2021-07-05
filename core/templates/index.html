@@ -1,0 +1,67 @@
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    {% bootstrap_css %}
+    <script src="../static/js/script.js"></script>
+</head>
+<body>
+    <div class='container'>
+        <center>
+            <h1>Login</h1>
+            {% bootstrap_messages %}
+            <form action="{% url 'index' %}" method="post" class="form" autocomplete="off">
+                {% csrf_token %}
+                {% bootstrap_form loginForm %}
+                <a id='openPasswordModal' href='#' data-toggle="modal" data-target="#passwordModal">Esqueceu sua senha?</a>
+                {% buttons %}
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                {% endbuttons %}
+  
+            </form>
+
+            <button type="submit"><a href="{% url 'signUp' %}">Criar conta</a></button>
+            
+    
+
+            <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Recuperação de senha!</h5>
+                    
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="put" class="form" autocomplete="off">
+                        <div class="form-group">
+                            {% csrf_token %}
+                            {% bootstrap_form pwdForm %}
+                        </div>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary">Enviar recuperação de senha</button>
+                    </form>
+                </div>
+                </div>
+            </div>
+            </div>
+        </center>
+         
+    </div>
+
+    <script>
+        $('#openPasswordModal').on('click', function (event) {
+        var modal = $(this)
+       
+        })
+    </script>
+    
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>

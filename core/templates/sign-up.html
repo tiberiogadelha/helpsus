@@ -1,0 +1,36 @@
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign-up</title>
+    {% bootstrap_css %}
+</head>
+<body>
+    <button type="menu" class="btn btn-outline-dark"><a href="{% url 'index' %}">Voltar</a></button>
+    <div class='container'>
+        <center>
+            <h2>Crie sua conta!</h2>
+            br
+            {% bootstrap_messages %}
+            <form action="{% url 'signUp' %}" method="post" class="form" autocomplete="on">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% buttons %}
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                    <button type="reset" class="btn btn-warning">Limpar dados</button>
+                    <button type="menu" class="btn btn-outline-dark"><a href="{% url 'index' %}">Voltar</a></button>
+                {% endbuttons %}
+                
+      
+            </form>      
+
+        </center>
+             
+    </div>
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>

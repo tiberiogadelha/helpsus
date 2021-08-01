@@ -1,4 +1,4 @@
-{% extends 'base.html'%}
+{% extends 'baseReception.html'%}
 {% load bootstrap4 %}
 {% load static %}
 {% block content %}
@@ -10,7 +10,7 @@
             <br>
             {% bootstrap_messages %}
             <br>
-            <form action="{% url 'signUp' %}" method="post" class="form" autocomplete="on">
+            <form action="{% url 'newPatient' %}" method="post" class="form" autocomplete="on">
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% buttons %}

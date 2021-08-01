@@ -1,84 +1,91 @@
+{% extends 'base.html' %}
+{% load static%}
 {% load bootstrap4 %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    {% bootstrap_css %}
-    <script src="../static/js/script.js"></script>
+{% block content %}
+  <title>HelpSUS!: Login</title>
 </head>
+
 <body>
+  <center>
+    <br>
     <div class='form-group'>
-        <center>
-            {% bootstrap_messages %}
-            <form action="{% url 'index' %}" method="post" class="form" autocomplete="off">
-                {% csrf_token %}
-                <h1>Login</h1> 
-                <p> 
-                    <label for="email">Email:</label>
-                    <input id="email" name="email" required="required" type="email" placeholder="seuemail@mail.com"/>
-                </p>
-                
-                <p> 
-                    <label for="password">Senha: </label>
-                    <input id="password" name="password" required="required" type="password" placeholder="*****" /> 
-                </p>
-                
-                
-                <p> 
-                    {% buttons %}
-                    <button type="submit" class="btn btn-primary">Entrar</button>
-                    {% endbuttons %}
-                </p>
-                
-                <p class="link">
-                    Ainda não tem conta?
-                    <a href="{% url 'signUp' %}">Cadastre-se</a>
-                </p>
-        
-    
-                <a id='openPasswordModal' href='#' data-toggle="modal" data-target="#passwordModal">Esqueceu sua senha?</a>
-  
-            </form>
+      {% bootstrap_messages %}
+      <form action="{% url 'index' %}" method="post" class="form" autocomplete="off">
+        {% csrf_token %}
+        <h2>Login</h2>
+        <br>
+        <p>
+          <label for="email">Email:</label>
+          <input id="email" name="email" required="required" type="email" placeholder="seuemail@mail.com" />
+        </p>
 
-        
-        
-            <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Recuperação de senha!</h5>
-                    
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form method="put" class="form" autocomplete="off">
-                        <div class="form-group">
-                            {% csrf_token %}
-                            {% bootstrap_form pwdForm %}
-                        </div>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-primary">Enviar recuperação de senha</button>
-                    </form>
-                </div>
-                </div>
+        <p>
+          <label for="password">Senha: </label>
+          <input id="password" name="password" required="required" type="password" placeholder="******" />
+          
+        </p>
+        <p>
+          <label for="setor">Setor: </label>
+          <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="department-select">
+            <option value ="null" selected>Selecione o setor</option>
+            <option value="recepcao">Recepção</option>
+            <option value="laboratorio">Laboratório</option>
+            <option value="triagem">Triagem</option>
+            <option value="farmacia">Farmácia</option>
+            <option value="consultorio">Consultório</option>
+          </select>
+        </p>
+
+
+        <p>
+          {% buttons %}
+          <button type="submit" class="btn btn-primary">Entrar</button>
+          {% endbuttons %}
+        </p>
+
+        <p class="link">
+          Ainda não tem conta?
+          <a href="{% url 'signUp' %}">Cadastre-se</a>
+        </p>
+
+
+        <a id='openPasswordModal' href="{% url 'reqNewPassword'%}">Esqueceu sua senha?</a>
+
+      </form>
+
+
+
+      <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Recuperação de senha!</h5>
+
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
+            <div class="modal-body">
+              <form method="put" class="form" autocomplete="off">
+                <div class="form-group">
+                  {% csrf_token %}
+                </div>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="submit" class="btn btn-primary">Enviar recuperação de senha</button>
+              </form>
             </div>
-        </center>
-         
+          </div>
+        </div>
+      </div>
+|
     </div>
+  </center>
+  <script>
 
-    <script>
-        $('#openPasswordModal').on('click', function (event) {
-        var modal = $(this)
-       
-        })
-    </script>
-    
-{% bootstrap_javascript jquery='full' %}
+  </script>
+
+  {% bootstrap_javascript jquery='full' %}
 </body>
+
 </html>
+{% endblock %}

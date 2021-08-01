@@ -7,6 +7,70 @@
             "name": "Diretor",
             "f_name": "Diretora"
         }
+    },
+    {
+        "model": "core.Role",
+        "pk": 2,
+        "fields": {
+            "cod": "biom",
+            "name": "Biomédico",
+            "f_name": "Biomédica"
+        }
+    },
+    {
+        "model": "core.Role",
+        "pk": 3,
+        "fields": {
+            "cod": "bioq",
+            "name": "Bioquímico",
+            "f_name": "Bioquímica"
+        }
+    },
+    {
+        "model": "core.Role",
+        "pk": 5,
+        "fields": {
+            "cod": "enf",
+            "name": "Enfermeiro",
+            "f_name": "Enfermeira"
+        }
+    },
+    {
+        "model": "core.Role",
+        "pk": 6,
+        "fields": {
+            "cod": "dig",
+            "name": "Digitador",
+            "f_name": "Digitadora"
+        }
+    },
+    {
+        "model": "core.Role",
+        "pk": 7,
+        "fields": {
+            "cod": "rec",
+            "name": "Recepcionista",
+            "f_name": "Recepcionista"
+        }
+    },
+    {
+        "model": "core.Role",
+        "pk": 8,
+        "fields": {
+            "cod": "coord",
+            "name": "Coordenador",
+            "f_name": "Coordenadora"
+        }
+    },
+    {
+        "model": "core.Role",
+        "pk": 9,
+        "fields": {
+            "cod": "farm",
+            "name": "Farmacêutico",
+            "f_name": "Farmacêutica"
+        }
     }
+    
 ]
   

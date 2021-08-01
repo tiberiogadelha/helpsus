@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
 #import dj-database-url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'recepcao',
     'core',
-    'bootstrap4'
+    'bootstrap4',
+    'betterforms'
 ]
 
 MIDDLEWARE = [
@@ -114,7 +116,10 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
+JWT_AUTH = {
+    'JWT_ALLOW_REFRESH': False,
+    'JWT_EXPIRATION_DELTA': timedelta(hours=6),
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

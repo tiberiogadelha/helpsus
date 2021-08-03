@@ -1,11 +1,14 @@
-from django.db.models.fields import DateTimeField
+import datetime
 from django.http import request
 from django.shortcuts import render
+from django.views.generic.base import View
 from .forms import PatientForm
 from django.contrib import messages
-from django.shortcuts import redirect
-from django.views.generic import TemplateView, FormView 
-from core.models import Attendance, Patient, FichaHandler
+from django.shortcuts import redirect, reverse
+from django.views.generic import TemplateView 
+from core.models import Attendance, Patient
+from .util import Util
+from datetime import date as dateClass
 
 
 class PatientView(TemplateView):
@@ -20,14 +23,18 @@ class PatientView(TemplateView):
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        patient = PatientForm(request.POST)
-        if (not(patient.is_valid())):
-            messages.error(request, 'Preencha os dados do paciente corretamente!')
+        try:
+            patient = PatientForm(request.POST)
+            if (not(patient.is_valid())):
+                messages.error(request, 'Preencha os dados do paciente corretamente!')
+                
             
-        
-        patient.save()
-        
-        return super().get(request, *args, **kwargs)
+            patient.save()
+            messages.success(request, 'Paciente cadastrado com sucesso!')
+            return super().get(request, *args, **kwargs)
+        except Exception as e:
+            messages.error(request, e.__str__())
+            return super().get(request, *args, **kwargs)
 
 class IndexReception(TemplateView):
     template_name = 'indexReception.html'
@@ -57,7 +64,6 @@ class CreateAttendanceView(TemplateView):
                     except Patient.DoesNotExist:
                             messages.error(self.request, "Paciente não encontrado. Faça o cadastro!")
         except Exception as e:
-            print('nesse')
             messages.error(request, e.__str__())
 
         context['patients'] = Patient.objects.all()
@@ -86,14 +92,16 @@ class CreateAttendanceView(TemplateView):
 
             if (not(patient)):
                 messages.error(request, 'Paciente não encontrado')
-            ##attendance = Attendance()
-            ficha = FichaHandler()
-            ficha.num = 0
-            ficha.save()
-            
-
-            ##attendance.num = FichaHandler.numero_ficha
-            ##print(FichaHandler.numero_ficha)
+            attendance = Attendance()
+            util = Util()
+            ficha = util.getFicha()
+            attendance.num = ficha
+            attendance.patient = patient
+            attendance.status = 'aguardando'
+            attendance.save()
+            query = f'?nome={patient.name}&ficha={attendance.num}'
+            return redirect(reverse('confirmAttendance') + query)
+        
             
         except Patient.DoesNotExist:
             messages.error(request, 'Paciente não encontrado')
@@ -101,3 +109,36 @@ class CreateAttendanceView(TemplateView):
             messages.error(request, e.__str__())
     
         return super().get(request, *args, **kwargs)
+
+class ConfirmAttendanceView(TemplateView):
+    template_name = 'confirmAttendance.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ConfirmAttendanceView, self).get_context_data(**kwargs)
+        try:
+            print(context)
+            context['nome'] = self.request.GET['nome']
+            context['ficha'] = self.request.GET['ficha']
+            return context
+        except Exception as e:
+            messages.error(self.request, 'Dados inválidos')
+        return super().get_context_data(**kwargs)
+
+class ViewAttendancesView(TemplateView):
+    template_name = 'viewAttendances.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ViewAttendancesView, self).get_context_data(**kwargs)
+        if (self.request.GET.__contains__('filter')):
+            date = self.request.GET['filter']
+            print(date)
+            sql = f"SELECT * FROM core_attendance a WHERE a.created_at = '{date}'"
+            attendances = Attendance.objects.raw(sql)
+            context['attendances'] = attendances
+        else:
+            today = dateClass.today()
+            sql = f"SELECT * FROM core_attendance WHERE created_at='{today}'"
+            attendances = Attendance.objects.raw(sql)
+            context['attendances'] = attendances
+
+        return context

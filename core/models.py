@@ -75,7 +75,7 @@ class Patient(Base):
         verbose_name_plural = 'Pacientes'
     
     def __str__(self):
-        return f'{self.name} ({self.birth_date})'
+        return f'{self.name} - CNS: {self.cns} - Data de nascimento: {self.birth_date}'
 
 
 
@@ -174,8 +174,8 @@ class Attendance(Base):
     moment_consultorio = models.DateTimeField('Momento da consulta', blank=True, null=True)
     moment_encerramento = models.DateTimeField('Momento do encerramento', blank=True, null=True)
 
-       
-
+    def __str__(self) -> str:
+        return f'Atendimento ({self.num}): Paciente {self.patient} - Status {self.status}'
 class VitalData(Base):
     temperature = models.FloatField('Temperatura corporal', null=False, blank=False)
     pas = models.IntegerField('Sístole', null=False, blank=False)

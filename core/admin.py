@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import User, Role, Employee, Patient
+from .models import User, Role, Employee, Patient, Attendance
 
 @admin.register(Employee)
 class UserAdmin(admin.ModelAdmin):
@@ -14,6 +14,8 @@ class RoleAdmin(admin.ModelAdmin):
 class PatientAdmin(admin.ModelAdmin):
     list_display = ('name', "birth_date", "cns", "cpf", "gender", "city", "uf", "street", "neighborhood", "num")
 
-
+@admin.register(Attendance)
+class AttendanceAdmin(admin.ModelAdmin):
+    list_display = ('patient', 'num', 'status', 'moment_triagem', 'moment_consultorio', 'moment_encerramento')
 
 # Register your models here.

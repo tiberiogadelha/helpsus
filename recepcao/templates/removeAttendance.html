@@ -1,0 +1,84 @@
+{% extends 'baseReception.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Remover atendimento</title>
+</head>
+<body>
+    <div class='container'>
+        <center>
+            <br>
+            {% bootstrap_messages %}
+            <br>
+            <br>
+            {% if attendance %}
+
+                <div class='container-sm'>
+                    <h2>Atendimento a ser deletado!</h2>
+                    <h6><b>Observação:</b> Apenas atendimentos com status 'aguardando' podem ser deletados!</h6>
+                    <br> <br>
+                    <input type="text" name="attendance_id" style="visibility: hidden;" value="{{ attendance.num }}">
+                    <div class="d-flex justify-content-sm-start">
+                        <p><b>Ficha: </b>{{ attendance.num }}</p>
+                    </div>
+                    <div class="d-flex justify-content-sm-start">
+                        <p><b>Paciente: </b>{{ attendance.patient.name }}</p>
+                    </div>
+                    <div class="d-flex justify-content-sm-start">
+                        <p><b>Data de nascimento: </b>{{attendance.patient.birth_date}}</p>
+                    </div>
+                    <div class="d-flex justify-content-sm-start">
+                        <p><b>Data da criação do atendimento: </b>{{ attendance.created_at }}</p>
+                    </div>
+                    <div class="d-flex justify-content-sm-start">
+                        <p><b>Status: </b>{{ attendance.status }}</p>
+                    </div>
+
+                    <div class="d-flex justify-content-sm-start">
+                        <input type="checkbox" onchange="updateBtn();" id="defaultCheck1">
+                        <label  for="defaultCheck1"> Todos os dados conferidos?
+                    </div>
+
+                </div>
+            
+            {% else %}
+                {% if deleted %}
+                    <div class="alert alert-success" role="alert">
+                        Atendimento excluído com sucesso!
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger" role="alert">
+                        Atendimento não encontrado ou já foi excluído!
+                    </div>
+                {% endif %}
+            {% endif %}
+            <br> <br>
+            {% buttons %}
+                <form action="{% url 'removeAttendance' %}" method="POST">
+                    {% if attendance %}
+                        <input type="text" name="attendance_id" style="visibility: hidden;" value="{{ attendance.id }}">
+                    {% endif %}
+                    {% csrf_token %}
+                    <button id="removeBtn" style="visibility: hidden;"class="btn btn-warning">Remover</button>
+                    <button type="menu" class="btn btn-info"><a href="{% url 'indexReception' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                </form>
+            {% endbuttons %}
+        </center>
+             
+    </div>
+
+    <script>
+        function updateBtn() {
+            const btn = document.getElementById('removeBtn');
+            const checked = document.getElementById('defaultCheck1');
+            if (checked.value == "on") 
+                btn.style.visibility = 'visible'
+            else
+                btn.style.visibility = 'hidden'
+        }
+    </script>
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

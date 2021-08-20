@@ -8,15 +8,36 @@
     <div class='container'>
         <center>
             <br>
-            {% bootstrap_messages %}
             <br>
+            {% if form.errors %}
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>{{ error|escape }}</strong>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>{{ error|escape }}</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+
+            {% endif %}
             <form action="{% url 'signUp' %}" method="post" class="form" autocomplete="on">
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% buttons %}
                     <button type="submit" class="btn btn-primary">Cadastrar</button>
                     <button type="reset" class="btn btn-warning">Limpar dados</button>
-                    <button type="menu" class="btn btn-secondary"><a href="{% url 'index' %}">Voltar</a></button>
+                    <button type="menu" class="btn btn-secondary"><a href="{% url 'index' %}" style="color: white; text-decoration:none">Voltar</a></button>
                 {% endbuttons %}
                 
       

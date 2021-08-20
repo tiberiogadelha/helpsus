@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'recepcao',
     'core',
     'bootstrap4',
-    'betterforms'
+    'betterforms',
+    'triagem'
 ]
 
 MIDDLEWARE = [

@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.db.models import signals
+from queue import PriorityQueue
 
 
 # Create your models here.
@@ -71,11 +72,12 @@ class Patient(Base):
     num = models.CharField('Número', max_length=10)
  
     class Meta:
-        verbose_name = 'Paciente',
+        verbose_name = 'paciente'
         verbose_name_plural = 'Pacientes'
     
     def __str__(self):
-        return f'{self.name} - CNS: {self.cns} - Data de nascimento: {self.birth_date}'
+        date = self.birth_date.strftime('%d/%m/%Y')
+        return f'{self.name} - CNS: {self.cns} - Data de nascimento: {date}'
 
 
 
@@ -98,7 +100,7 @@ class Role(models.Model):
     f_name = models.CharField('Feminino', max_length=150)
     
     class Meta:
-        verbose_name = 'Cargo',
+        verbose_name = 'Cargo'
         verbose_name_plural = 'Cargos'
     
     def __str__(self):
@@ -136,11 +138,16 @@ class UserManager(BaseUserManager):
 class Employee(AbstractUser):
     email = models.EmailField('Email', unique=True)
     first_name = models.CharField('Primeiro nome', max_length=50)
-    last_name = models.CharField('Sobrenome', max_length=250)
+    last_name = models.CharField('Sobrenomes', max_length=250)
     birth_date = models.DateField('Data de nascimento')
     gender = models.CharField('Sexo', max_length=1, choices=GENDER_CHOICES, default='o')
     is_enabled = models.BooleanField('Está habilitado', default=False)
-    role = models.ForeignKey('core.Role', verbose_name='Cargo', null=True, on_delete=models.CASCADE)
+    role = models.ForeignKey(
+        Role, 
+        verbose_name='Cargo', 
+        null=True, 
+        on_delete=models.CASCADE
+    )
     conselho = models.CharField('Conselho', max_length=120, null=True, blank=True)
     created_at = models.DateField('Created at', auto_now_add=True)
     updated_at = models.DateField('Updated at', auto_now=True)
@@ -153,6 +160,13 @@ class Employee(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'birth_date', 'gender']
     objects = UserManager()
+
+    class Meta:
+        verbose_name = 'Funcionário'
+        verbose_name_plural = 'Funcionários'
+
+    
+        
 
 class Attendance(Base):
     enum_status = (
@@ -173,13 +187,30 @@ class Attendance(Base):
     moment_triagem = models.DateTimeField('Momento da triagem', blank=True, null=True)
     moment_consultorio = models.DateTimeField('Momento da consulta', blank=True, null=True)
     moment_encerramento = models.DateTimeField('Momento do encerramento', blank=True, null=True)
+    creation_hour = models.TimeField('Hora da criação', blank=False, default=datetime.time(datetime.now()))
+    def __str__(self):
+        formated_date = self.created_at.strftime('%d/%m/%Y')
+        return f'Atendimento ({self.num}): Paciente {self.patient} - Status {self.status} - Data {formated_date} às {str(self.creation_hour)[:5]}'
+    
+    def __lt__(self, other):
+        if isinstance(other, Attendance):
+            if (self.created_at < other.created_at):
+                return True
+            elif (self.created_at == other.created_at):
+                return self.creation_hour <= other.creation_hour
+            return False
+        else:
+            raise('invalid comparation')
 
-    def __str__(self) -> str:
-        return f'Atendimento ({self.num}): Paciente {self.patient} - Status {self.status}'
+    class Meta:
+        verbose_name = 'Atendimento'
+        verbose_name_plural = 'Atendimentos'
+
+        
 class VitalData(Base):
     temperature = models.FloatField('Temperatura corporal', null=False, blank=False)
-    pas = models.IntegerField('Sístole', null=False, blank=False)
-    pad = models.IntegerField('Diástole', null=False, blank=False)
+    pas = models.IntegerField('Pressão sistólica', null=False, blank=False)
+    pad = models.IntegerField('Pressão diástolica', null=False, blank=False)
     saturation = models.IntegerField('Saturação', null=False, blank=False)
     heart_beats = models.IntegerField('Batimentos', null=False, blank=False)
 
@@ -209,8 +240,9 @@ class Triagem(Base):
         on_delete=models.CASCADE,
         blank=False,
         null=False,
-        related_name='Vitais'
+        related_name= "Vitais",
     )
-    department = models.CharField('Setor', default= 'azul', blank=False, null=False, max_length=30) 
+    department = models.CharField('Ala', default= 'azul', blank=False, null=False, max_length=30) 
+    description = models.TextField('Descrição dos sintomas', blank=False, null=False, max_length=800)
 
     

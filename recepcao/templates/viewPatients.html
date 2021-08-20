@@ -1,0 +1,83 @@
+{% extends 'baseReception.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Pacientes cadastrados!</title>
+</head>
+<body>
+    <div class='container'>
+        <br>
+        {% bootstrap_messages %}
+            {% if form.errors %}
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>{{ error|escape }}</strong>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+        
+        <center>
+            <br>
+            <br>
+            <form action="{% url 'editPatient' %}" method="get">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="patient_span">Nome/CPF/CNS do paciente: </span>
+                    </div>
+                    <input list="patients" type="text" id="patient_data" name="patient_data" class="form-control" aria-label="Default" aria-describedby="patient_data" onchange="this.form.submit()">
+                </div>
+
+                <datalist id="patients">
+                    {% for patient in patients %}
+                        <option value="{{ patient.id }}"> {{ patient }} </option>
+                    {% endfor %}   
+                </datalist>
+            </form>
+     
+                
+            {% if userData %}
+                <form action="{% url 'editPatient' %}" method="post" class="form" autocomplete="on">
+                    <input type="text" name="id_patient" value={{userData.id}} style="visibility: hidden;">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    {% buttons %}
+                        <button type="submit" class="btn btn-primary">Atualizar dados</button>
+                        <button type="reset" class="btn btn-warning">Limpar dados</button>
+                        <button type="menu" class="btn btn-secondary"><a href="{% url 'index' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                    {% endbuttons %}
+                </form> 
+            {% endif %}
+
+        </center>
+             
+    </div>
+
+    <script>
+
+        function showButton() {
+            const checked = document.getElementById('confirm').checked;
+    
+            if (checked)
+                document.getElementById('btnNewAttendance').style.visibility = 'visible';
+            else
+                document.getElementById('btnNewAttendance').style.visibility = 'hidden';
+        }
+
+        function updateHour() {
+            const now = Date.now();
+            const date = new Date(now);
+            const div = document.getElementById('attendanceHour');
+            if (div) div.value = date.toLocaleDateString() + ' às ' + date.toLocaleTimeString().slice(0,5);
+            
+        }      
+    </script>  
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

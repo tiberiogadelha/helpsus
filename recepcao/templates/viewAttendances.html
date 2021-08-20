@@ -10,16 +10,13 @@
             <br>
             {% bootstrap_messages %}
             <br>
-        
-        
-           
             
             <br>
             <div class="container">
                 <div class="form-control">
                     <form action="" method="get">
                         <label for="filter">Pesquisar por data</label>
-                        <input type="date" class="form-control" id="filter"  placeholder="today()">
+                        <input type="date" name="filter" class="form-control" id="filter" oninput="this.form.submit()">
                         
                     </form>
                 </div>
@@ -31,6 +28,7 @@
                         <th scope="col">Nome completo</th>
                         <th scope="col">Data de nascimento</th>
                         <th scope="col">Criação do atendimento</th>
+                        <th scope="col">Horário da entrada</th>
                         <th scope="col">Status</th>
                         <th scope="col">Excluir?</th>
                       </tr>
@@ -42,8 +40,9 @@
                             <th scope="row">{{attendance.patient.name}}</th>
                             <td scope="row">{{attendance.patient.birth_date}}</td>
                             <td scope="row">{{attendance.created_at}}</td>
+                            <td scope="row" style="text-align: center;">{{attendance.creation_hour}}</td>
                             <td scope="row">{{attendance.status}}</td>
-                            <td scope="row"><a href=""><img src="{% static 'imgs/delete.png' %}" alt="X" style="width: 19px;"> </a></td>
+                            <td scope="row"><a href="{% url 'removeAttendance' %}?id={{attendance.id}}"><img src="{% static 'imgs/delete.png' %}" alt="X" style="width: 19px;"> </a></td>
                         </tr>
                         {% endfor %} 
                     </tbody>
@@ -54,19 +53,6 @@
              
     </div>
 
-    <script>
-        const moment = new Date(Date.now()).toLocaleDateString();
-        const paragraph = document.getElementById('moment_p');
-        const message = `Atendimento criado em: <b>${moment}</b>`;
-        paragraph.innerHTML = message;
-
-        const horario = new Date(Date.now()).toLocaleTimeString();
-        const horarioParagraph = document.getElementById('horario_p');
-        const messsageParagraph = `Horário: às <b>${horario}</b>`;
-        horarioParagraph.innerHTML = messsageParagraph;
-
-        
-    </script>
 
 
 {% bootstrap_javascript jquery='full' %}

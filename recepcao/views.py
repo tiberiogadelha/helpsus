@@ -2,7 +2,7 @@ import datetime
 from django.http import request
 from django.shortcuts import render
 from django.views.generic.base import View
-from .forms import PatientForm
+from .forms import PatientForm, PatientUpdate
 from django.contrib import messages
 from django.shortcuts import redirect, reverse
 from django.views.generic import TemplateView 
@@ -16,7 +16,13 @@ class PatientView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(PatientView, self).get_context_data(**kwargs)
-        context['form'] = PatientForm()
+        try:
+            if(self.request.method != 'GET'):
+                context['form'] = PatientForm(self.request.POST)
+            else:
+                context['form'] = PatientForm()
+        except: 
+            context['form'] = PatientForm()
         return context
         
     def get(self, request, *args, **kwargs):
@@ -28,7 +34,6 @@ class PatientView(TemplateView):
             if (not(patient.is_valid())):
                 messages.error(request, 'Preencha os dados do paciente corretamente!')
                 
-            
             patient.save()
             messages.success(request, 'Paciente cadastrado com sucesso!')
             return super().get(request, *args, **kwargs)
@@ -116,7 +121,6 @@ class ConfirmAttendanceView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ConfirmAttendanceView, self).get_context_data(**kwargs)
         try:
-            print(context)
             context['nome'] = self.request.GET['nome']
             context['ficha'] = self.request.GET['ficha']
             return context
@@ -131,7 +135,6 @@ class ViewAttendancesView(TemplateView):
         context = super(ViewAttendancesView, self).get_context_data(**kwargs)
         if (self.request.GET.__contains__('filter')):
             date = self.request.GET['filter']
-            print(date)
             sql = f"SELECT * FROM core_attendance a WHERE a.created_at = '{date}'"
             attendances = Attendance.objects.raw(sql)
             context['attendances'] = attendances
@@ -142,3 +145,105 @@ class ViewAttendancesView(TemplateView):
             context['attendances'] = attendances
 
         return context
+
+class RemoveAttendanceView(TemplateView):
+    template_name = 'removeAttendance.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RemoveAttendanceView, self).get_context_data(**kwargs)
+        try:
+            id = self.request.GET['id']
+            attendance = Attendance.objects.filter(id=id).first()
+            context['attendance'] = attendance
+            try:
+                context['deleted'] = self.request.GET['success']
+            except:
+                None
+            return context
+        except Exception as e:
+            return super().get_context_data(**kwargs)
+
+    def post(self, request, *args, **kwargs): 
+        try:
+            id = request.POST['attendance_id']
+            attendance = Attendance.objects.get(id=int(id))
+            attendance.delete()
+            messages.success(request, 'Atendimento removido com sucesso!')
+            return redirect('viewAttendances')
+        except Exception as e:
+            messages.error(request, e.__str__()) 
+
+        return super().get(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
+class EditPatientView(TemplateView):
+    template_name = 'viewPatients.html'
+
+    def format_date(self, date):
+        splited = date.split('-')
+        new_date = f'{splited[2]}/{splited[1]}/{splited[0]}'
+        return new_date
+
+    def get_context_data(self, **kwargs):
+        context = super(EditPatientView, self).get_context_data(**kwargs)
+        try:
+            if (self.request.POST):
+                return
+            if (self.request.GET.__contains__('patient_data')):
+                if (self.request.GET['patient_data'] != 'patient_data'):
+                    if (self.request.method == 'GET'):
+                        patient_id = self.request.GET['patient_data']
+                    else:
+                        patient_id = self.request.POST['id_patient']
+                    try:
+                        patient = Patient.objects.filter(id=patient_id).first()
+                        if (not(patient)):
+                            messages.error(self.request, "Paciente não encontrado. Faça o cadastro")
+                            return redirect('editPatient')
+                        context['userData'] = patient
+                        if(self.request.method != 'GET'):
+                            context['form'] = PatientUpdate(self.request.POST)
+                        else:
+                            context['form'] = PatientUpdate(instance=patient)
+                    except Patient.DoesNotExist:
+                            messages.error(self.request, "Paciente não encontrado. Faça o cadastro!")
+        except Exception as e:
+            messages.error(request, e.__str__())
+
+        context['patients'] = Patient.objects.all()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        try:
+            form = PatientForm(request.POST)
+            id = request.POST['id_patient']
+           
+            if (form.is_valid()):
+                patient = Patient.objects.filter(id=id).update(
+                    name = form.cleaned_data['name'],
+                    birth_date = form.cleaned_data['birth_date'],
+                    gender = form.cleaned_data['gender'],
+                    cns = form.cleaned_data['cns'],
+                    uf = form.cleaned_data['uf'],
+                    city = form.cleaned_data['city'],
+                    neighborhood = form.cleaned_data['neighborhood'],
+                    street = form.cleaned_data['street'],
+                    num = form.cleaned_data['num']
+
+
+                )
+                messages.success(request, 'Dados atualizados com sucesso!')
+                query = f'?patient_data={id}'
+                return redirect(reverse('editPatient') + query)
+            else:
+                query = f'?patient_data={id}'
+                messages.error(request, 'Preencha os dados do paciente corretamente!')
+                return redirect(reverse('editPatient') + query)
+
+        except Exception as e:
+            messages.error(request, e.__str__())
+
+        return super().get(request, *args, **kwargs)

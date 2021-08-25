@@ -32,12 +32,9 @@
 
             {% endif %}
             {% if attendance %}
-                <script>
-                    console.log('ueeeeeeeee')
-                </script>
                     <form action="{% url 'updateAttendanceTriagem' %}" method="post" class="form" autocomplete="on">
                         {% csrf_token %} 
-                        <input type="text" name="id" style="visibility: hidden;" value="{{attendance.attendance.id}}">
+                        <input type="text" name="id" style="visibility: hidden;" value="{{attendance.id}}">
                         <div class="form-group"><label for="id_name">Nome do paciente</label><input type="text" name="name" maxlength="150" class="form-control" value="{{attendance.patient.name}}" readonly></div>
                         <div class="form-group"><label for="birth_date">Data de nascimento</label><input type="text" id="birth_date" name="birth_date" maxlength="150" class="form-control" value="{{attendance.patient.birth_date}}" readonly></div>
                         <div class="form-group"><label for="birth_date">Idade</label><input type="text" id="age" name="age" maxlength="150" class="form-control" value="{{meta.age}}" readonly></div>
@@ -54,13 +51,12 @@
                             <div class="modal-dialog" role="document">
                               <div class="modal-content">
                                 <div class="modal-header">
-                                  <h5 class="modal-title">Salvar atendimento</h5>
+                                  <h5 class="modal-title">Atenção!</h5>
                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                   </button>
                                 </div>
                                 <div class="modal-body">
-                                  <p><b>Atenção!</b></p>
                                   <p>Confirme todos os dados antes de salvar, pois não haverá mais como editar.</p>
                                 </div>
                                 <div class="modal-footer">

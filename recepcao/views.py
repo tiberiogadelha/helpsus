@@ -135,7 +135,9 @@ class ViewAttendancesView(TemplateView):
         context = super(ViewAttendancesView, self).get_context_data(**kwargs)
         if (self.request.GET.__contains__('filter')):
             date = self.request.GET['filter']
-            sql = f"SELECT * FROM core_attendance a WHERE a.created_at = '{date}'"
+            date1 = datetime(int(filter[0]), int(filter[1]), int(filter[2]), 0, 0, 0)
+            date2 = datetime(int(filter[0]), int(filter[1]), int(filter[2]), 23, 59, 59)
+            sql = f"SELECT * FROM core_attendance a WHERE (a.created_at between '{date1.__str__()}' AND '{date2.__str__()}')"
             attendances = Attendance.objects.raw(sql)
             context['attendances'] = attendances
         else:

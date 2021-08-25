@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import User, Role, Employee, Patient, Attendance
+from .models import Triagem, User, Role, Employee, Patient, Attendance, VitalData
 
 @admin.register(Employee)
 class UserAdmin(admin.ModelAdmin):
@@ -18,3 +18,10 @@ class PatientAdmin(admin.ModelAdmin):
 class AttendanceAdmin(admin.ModelAdmin):
     list_display = ('patient', 'num', 'status', 'moment_triagem', 'moment_consultorio', 'moment_encerramento')
 
+@admin.register(VitalData)
+class VitalData(admin.ModelAdmin):
+    list_display = ('temperature', 'pas', 'pad', 'saturation', 'heart_beats')
+
+@admin.register(Triagem)
+class TriagemAdmin(admin.ModelAdmin):
+    list_display = ('attendance', 'responsible', 'vital_data', 'description', 'priority')

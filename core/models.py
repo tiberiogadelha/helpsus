@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.db import models
+from django.db.models.fields.related import ForeignKey
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.db.models import signals
@@ -15,8 +16,8 @@ GENDER_CHOICES = (
     )
 
 class Base(models.Model):
-    created_at = models.DateField('Created at', auto_now_add=True)
-    updated_at = models.DateField('Updated at', auto_now=True)
+    created_at = models.DateTimeField('Criado em', auto_now_add=True)
+    updated_at = models.DateTimeField('Atualizado em', auto_now=True)
 
     class Meta:
         abstract = True
@@ -188,6 +189,7 @@ class Attendance(Base):
     moment_consultorio = models.DateTimeField('Momento da consulta', blank=True, null=True)
     moment_encerramento = models.DateTimeField('Momento do encerramento', blank=True, null=True)
     creation_hour = models.TimeField('Hora da criação', blank=False, default=datetime.time(datetime.now()))
+
     def __str__(self):
         formated_date = self.created_at.strftime('%d/%m/%Y')
         return f'Atendimento ({self.num}): Paciente {self.patient} - Status {self.status} - Data {formated_date} às {str(self.creation_hour)[:5]}'
@@ -215,11 +217,10 @@ class VitalData(Base):
     heart_beats = models.IntegerField('Batimentos', null=False, blank=False)
 
 class Triagem(Base):
-    setor_enum = (
-        ('azul', 'Ala Azul'),
-        ('verde', 'Ala Verde'),
-        ('amarela', 'Ala Amarela'),
-        ('vermelha', 'Ala Vermelha')
+    priority_enum = (
+        (0, 'Normal'),
+        (1, 'Moderada'),
+        (2, 'Alta')
     )
     attendance = models.ForeignKey(
         Attendance,
@@ -242,7 +243,9 @@ class Triagem(Base):
         null=False,
         related_name= "Vitais",
     )
-    department = models.CharField('Ala', default= 'azul', blank=False, null=False, max_length=30) 
-    description = models.TextField('Descrição dos sintomas', blank=False, null=False, max_length=800)
+    priority = models.IntegerField('Prioridade', default= 1, blank=False, null=False, choices=priority_enum) 
+    description = models.TextField('Descrição dos sintomas', blank=False, null=False, max_length=800, default="")
 
-    
+class AttendanceQueue(models.Model):
+    attendances = models.JSONField()   
+

@@ -13,11 +13,14 @@
             
             <br>
             <div class="container">
-                <div class="form-control">
+                <div>
                     <form action="" method="get">
-                        <label for="filter">Pesquisar por data</label>
-                        <input type="date" name="filter" class="form-control" id="filter" oninput="this.form.submit()">
-                        
+                        <div class="input-group">
+                            <input type="date" name="filter" id="filter" class="form-control" placeholder="Pesquisar por data" aria-label="Pesquisar por data" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                              <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
+                            </div>
+                        </div>
                     </form>
                 </div>
                <br><br><br>

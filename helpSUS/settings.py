@@ -44,7 +44,10 @@ INSTALLED_APPS = [
     'core',
     'bootstrap4',
     'betterforms',
-    'triagem'
+    'triagem',
+    'consultorio',
+    'farmacia',
+    'laboratorio'
 ]
 
 MIDDLEWARE = [
@@ -143,7 +146,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = 'media/'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend';
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 '''
 EMAIL_HOST =

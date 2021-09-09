@@ -10,7 +10,7 @@ from django.views.generic import TemplateView
 from core.models import Attendance, Patient, Triagem, VitalData
 from datetime import date, datetime, timedelta
 from .forms import TriagemForm
-from .util import calculate_age, extract_vital_data, extract_triagem_data
+from .util import alocate_patient, calculate_age, extract_vital_data, extract_triagem_data
 
 class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'indexTriagem.html'
@@ -100,12 +100,16 @@ class UpdateAttendanceView(LoginRequiredMixin, TemplateView):
                 created_vital.save()
                 triagem = extract_triagem_data(form)
                 attendance.status = 'triagem'
+                attendance.priority = triagem.priority
                 attendance.save()
                 triagem.attendance = attendance
                 triagem.responsible = request.user
                 triagem.vital_data = created_vital
                 triagem.save()
+                
+                alocate_patient(attendance)
                 messages.success(request, 'Triagem do paciente finalizada!')
+                
                 return redirect('getAttendancesTriagem')
             print(form.errors)
             id = request.POST.id
@@ -115,3 +119,43 @@ class UpdateAttendanceView(LoginRequiredMixin, TemplateView):
         except Exception as e:
             print(e)
             return super().get(request, *args, **kwargs)
+
+class EditLastAttendanceView(LoginRequiredMixin, TemplateView):
+    template_name = 'editLastAttendanceTriagem.html'
+    login_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(EditLastAttendanceView, self).get_context_data(**kwargs)
+        try:
+            id = 13
+            attendance = Attendance.objects.filter(id = id).first()
+            birth_date = attendance.patient.birth_date
+            age = f'{calculate_age(birth_date)} anos'
+            formated_date = attendance.patient.birth_date.strftime("%d/%m/%Y")
+            attendance.patient.formated_date = f'{formated_date} - Idade: {age} anos'
+            entrada = attendance.created_at.strftime("%d/%m/%Y")
+            
+            context["attendance"] = attendance 
+            entrance = f'{entrada} às {str(attendance.creation_hour)[:5]}'
+            meta_data = { 'age': age, 'entrance': entrance }
+            context['meta'] = meta_data
+            sql_triagem = "SELECT * FROM core_triagem WHERE attendance_id=" + str(id)
+            triagem = Triagem.objects.raw(sql_triagem)
+            form = TriagemForm() if (self.request.method == 'GET') else TriagemForm(self.request.POST)
+            context['triagem'] = triagem[0]
+        except Exception as e:
+            print(e.__str__())
+            if (self.request.method == 'POST'):
+                form = TriagemForm(self.request.POST)
+            else:  
+                form = TriagemForm()
+
+            context['form'] = form
+            return context
+        context['form'] = form
+        return context
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+

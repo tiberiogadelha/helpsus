@@ -132,3 +132,16 @@ class ReqNewPasswordView(TemplateView):
             except Employee.DoesNotExist:
                 messages.error(request, 'Este email não está associado a nenhuma conta!')
         return super().get(request, *args, **kwargs)
+
+from django.contrib.auth import logout
+
+class logout_view(TemplateView):
+    template_name = 'logout.html'
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)
+    
+    def get(self, request: http.HttpRequest, *args, **kwargs) -> http.HttpResponse:
+        logout(request)
+        return redirect('index')
+    

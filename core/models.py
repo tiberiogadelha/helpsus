@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.db.models import signals
 from queue import PriorityQueue
+import json
 
 
 # Create your models here.
@@ -162,6 +163,18 @@ class Employee(AbstractUser):
     REQUIRED_FIELDS = ['first_name', 'last_name', 'birth_date', 'gender']
     objects = UserManager()
 
+    def __str__(self) -> str:
+        string = f'{self.first_name} {self.last_name} - {self.role}:{self.conselho}'
+        return string
+
+    def getCarimbo(self, employee):
+        print(employee)
+        if(employee.gender == 'm'):
+            string = f'{employee.first_name} {employee.last_name} - {employee.role.name}/{employee.conselho}'
+        else:
+            string = f'{employee.first_name} {employee.last_name} - {employee.role.f_name}/{employee.conselho}'
+        return string
+
     class Meta:
         verbose_name = 'Funcionário'
         verbose_name_plural = 'Funcionários'
@@ -175,6 +188,7 @@ class Attendance(Base):
         ('triagem', 'Triado'),
         ('consultorio', 'Consultado'),
         ('encerrado', 'Encerrado')
+
     )
     patient = models.ForeignKey(
         Patient,
@@ -189,6 +203,7 @@ class Attendance(Base):
     moment_consultorio = models.DateTimeField('Momento da consulta', blank=True, null=True)
     moment_encerramento = models.DateTimeField('Momento do encerramento', blank=True, null=True)
     creation_hour = models.TimeField('Hora da criação', blank=False, default=datetime.time(datetime.now()))
+    priority = models.IntegerField('Prioridade', default=0)
 
     def __str__(self):
         formated_date = self.created_at.strftime('%d/%m/%Y')
@@ -215,6 +230,14 @@ class VitalData(Base):
     pad = models.IntegerField('Pressão diástolica', null=False, blank=False)
     saturation = models.IntegerField('Saturação', null=False, blank=False)
     heart_beats = models.IntegerField('Batimentos', null=False, blank=False)
+
+    def __str__(self) -> str:
+        string = f'Dados vitais({self.id}) - Temperatura: {self.temperature}°C, Pressão: sistólica {self.pas} mmHg, diastólica {self.pad} mmHg, Saturação: {self.saturation}%, Batimentos: {self.heart_beats}'
+        return string
+        
+    class Meta:
+        verbose_name = 'Dados vitais'
+        verbose_name_plural = 'Dados vitais'
 
 class Triagem(Base):
     priority_enum = (
@@ -246,6 +269,29 @@ class Triagem(Base):
     priority = models.IntegerField('Prioridade', default= 1, blank=False, null=False, choices=priority_enum) 
     description = models.TextField('Descrição dos sintomas', blank=False, null=False, max_length=800, default="")
 
+    def __str__(self):
+        employee = Employee()
+        carimbo = employee.getCarimbo(self.responsible)
+        string = f'Triagem({self.id}) - Prioridade: {self.priority}, {self.attendance}, {self.vital_data} Responsável:{carimbo}'
+        return string
+
+    class Meta:
+        verbose_name = 'Triagem'
+        verbose_name_plural = 'Triagens'
+
+def get_default_queue():
+        return {"attendances":[]}
 class AttendanceQueue(models.Model):
-    attendances = models.JSONField()   
+    attendances = models.JSONField(default = get_default_queue)   
+
+    def __str__(self) -> str:
+        ##array = json.loads(self.attendances)
+        a= json.loads(self.attendances)
+        return self.attendances
+        for element in array:
+            attendance = json.loads(element)
+            f'Atendimento ({self.num}): Paciente {self.patient} - Status {self.status} - Data {formated_date} às {str(self.creation_hour)[:5]}'
+            formated = f''
+        return string
+
 

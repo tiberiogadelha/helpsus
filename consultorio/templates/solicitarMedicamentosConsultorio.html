@@ -29,7 +29,7 @@
                 {% csrf_token %}
                 
                 <div id="patient_values">
-                    {% if userData %}
+               
                         <input type="number" name="patient_id" value="{{ userData.id }}" style="visibility: hidden;">
                         <div class="form-floating">
                             <label for="namePatient">Nome</label>
@@ -47,11 +47,15 @@
                             <label for="attendanceHour">Data do atendimento: </label>
                             <input type="datetime" class="form-control" id="attendanceHour" readonly>
                         </div>
+                        <div class="form-floating" onload="updateHour();">
+                            <label for="reqMed">Requisição do medicamento: </label>
+                            <textarea class="form-control" id="reqMed" rows="4" cols="40"> </textarea>
+                        </div>
                         <div class="form-floating">
                             <input class="form-check-input" type="checkbox" id="confirm" name="confirm" onclick="showButton();updateHour();">
                             <label class="form-check-label" for="confirm">Dados confirmados?</label>
                         </div>
-                    {% endif %}
+            
                 </div>
                     <br>
                     <br>

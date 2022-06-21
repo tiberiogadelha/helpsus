@@ -1,4 +1,6 @@
 import datetime
+
+import pytz
 from django.http import request
 from django.shortcuts import render
 from django.views.generic.base import View
@@ -93,9 +95,9 @@ class CreateAttendanceView(TemplateView):
     def post(self, request, *args, **kwargs):
         try:
             patient_id = request.POST['patient_id']
-            patient = Patient.objects.filter(id = patient_id).first()
+            patient = Patient.objects.filter(id=patient_id).first()
 
-            if (not(patient)):
+            if not patient:
                 messages.error(request, 'Paciente não encontrado')
             attendance = Attendance()
             util = Util()
@@ -133,17 +135,21 @@ class ViewAttendancesView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ViewAttendancesView, self).get_context_data(**kwargs)
-        if (self.request.GET.__contains__('filter')):
-            date = self.request.GET['filter']
-            date1 = datetime(int(filter[0]), int(filter[1]), int(filter[2]), 0, 0, 0)
-            date2 = datetime(int(filter[0]), int(filter[1]), int(filter[2]), 23, 59, 59)
+        if 'filter' in self.request.GET and self.request.GET['filter']:
+            date = self.request.GET['filter'].split('-')
+            date1 = datetime.datetime(int(date[0]), int(date[1]), int(date[2]), 0, 0, 0)
+            date2 = datetime.datetime(int(date[0]), int(date[1]), int(date[2]), 23, 59, 59)
             sql = f"SELECT * FROM core_attendance a WHERE (a.created_at between '{date1.__str__()}' AND '{date2.__str__()}')"
             attendances = Attendance.objects.raw(sql)
             context['attendances'] = attendances
         else:
-            today = dateClass.today()
-            sql = f"SELECT * FROM core_attendance WHERE created_at='{today}'"
-            attendances = Attendance.objects.raw(sql)
+            today_start = Util.agora().replace(hour=0, minute=0, second=0)
+            today_end = Util.agora().replace(hour=23, minute=59, second=59)
+
+            attendances = Attendance.objects.filter(
+                created_at__gte=today_start,
+                created_at__lte=today_end
+            )
             context['attendances'] = attendances
 
         return context

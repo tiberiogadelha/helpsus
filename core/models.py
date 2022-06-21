@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.db import models
 from django.db.models.fields.related import ForeignKey
+from django.forms import JSONField
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.db.models import signals
@@ -22,6 +23,7 @@ class Base(models.Model):
 
     class Meta:
         abstract = True
+
 
 class FichaHandler(models.Model):
     num = models.IntegerField('Nº Ficha')
@@ -282,7 +284,7 @@ class Triagem(Base):
 def get_default_queue():
         return {"attendances":[]}
 class AttendanceQueue(models.Model):
-    attendances = models.JSONField(default = get_default_queue)   
+    attendances = JSONField()
 
     def __str__(self) -> str:
         ##array = json.loads(self.attendances)

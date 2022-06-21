@@ -1,10 +1,15 @@
 from django.contrib import admin
 
-from .models import Triagem, User, Role, Employee, Patient, Attendance, VitalData, AttendanceQueue
+from .models import Triagem, User, Role, Employee, Patient, Attendance, VitalData, AttendanceQueue, FichaHandler
+
 
 @admin.register(Employee)
 class UserAdmin(admin.ModelAdmin):
     list_display = ('first_name', "last_name", "created_at", "email", "role", "conselho")
+
+@admin.register(FichaHandler)
+class FichaHandlerAdmin(admin.ModelAdmin):
+    list_display = ("num", )
 
 @admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):

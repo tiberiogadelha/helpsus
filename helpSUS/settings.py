@@ -87,12 +87,8 @@ WSGI_APPLICATION = 'helpSUS.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'tcc',
-        'USER': 'postgres',
-        'PASSWORD': 'abc123',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'banco.db',
     }
 }
 
@@ -160,4 +156,4 @@ EMAIL_HOST_PASSWORD =
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'core.Employee' 
+AUTH_USER_MODEL = 'core.Employee'

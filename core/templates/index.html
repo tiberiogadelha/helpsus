@@ -14,47 +14,55 @@
         {% csrf_token %}
         <h2>Login</h2>
         <br>
+        <div class="row" style="display: block; justify-content: center; align-items: center;">
+
+
+          <div class="input-group mb-3" style="width: 600px;">
+            <input type="email" id="email" name="email" class="form-control" required placeholder="email@mail.com" aria-label="E-mail" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+              <span class="input-group-text" id="basic-addon2">E-mail</span>
+            </div>
+          </div>
+
+          <div class="input-group mb-3" style="width: 600px">
+            <input type="password" class="form-control" id="password" name="password" required type="password" placeholder="******" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+              <span class="input-group-text" id="basic-addon2">Senha</span>
+            </div>
+          </div>
+
+      
+          <div class="input-group mb-3" style="width: 600px">
+            <select name="department_select" id="department_select" class="custom-select" required id="inputGroupSelect02">
+              <option value="null" selected>Selecione...</option>
+              <option value="recepcao">Recepção</option>
+              <option value="laboratorio">Laboratório</option>
+              <option value="triagem">Triagem</option>
+              <option value="farmacia">Farmácia</option>
+              <option value="consultorio">Consultório</option>
+            </select>
+            <div class="input-group-append">
+              <label class="input-group-text" for="inputGroupSelect02">Setor</label>
+            </div>
+          </div>
+
+        </div>
         
-        <p>
-          <label for="email">Email:</label>
-          <input id="email" name="email" required="required" type="email" placeholder="seuemail@mail.com" />
-        </p>
-
-        <p>
-          <label for="password">Senha: </label>
-          <input id="password" name="password" required="required" type="password" placeholder="******" />
-          
-        </p>
-        <p>
-          <label for="setor">Setor: </label>
-          <select name = "department_select"class="form-select form-select-sm" aria-label=".form-select-sm example" id="department_select">
-            <option value ="null" selected>Selecione o setor</option>
-            <option value="recepcao">Recepção</option>
-            <option value="laboratorio">Laboratório</option>
-            <option value="triagem">Triagem</option>
-            <option value="farmacia">Farmácia</option>
-            <option value="consultorio">Consultório</option>
-          </select>
-        </p>
-
-
         <p>
           {% buttons %}
           <button type="submit" class="btn btn-primary">Entrar</button>
           {% endbuttons %}
         </p>
 
+        <a id='openPasswordModal' href="{% url 'reqNewPassword' %}">Esqueceu sua senha?</a>
         <p class="link">
           Ainda não tem conta?
           <a href="{% url 'signUp' %}">Cadastre-se</a>
         </p>
 
 
-        <a id='openPasswordModal' href="{% url 'reqNewPassword' %}">Esqueceu sua senha?</a>
 
       </form>
-
-|
     </div>
   </center>
   <script>

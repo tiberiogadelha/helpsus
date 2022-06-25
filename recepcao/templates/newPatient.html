@@ -3,6 +3,7 @@
 {% load static %}
 {% block content %}
     <title>Sign-up</title>
+    <script src="{% static 'js/newPatient.js' %}"></script>
 </head>
 <body>
     <div class='container'>
@@ -36,9 +37,9 @@
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% buttons %}
+                    <button type="menu" class="btn btn-secondary" onclick="backToHome()">Voltar</button>
+                    <button type="reset" class="btn btn-warning" style="color: white;">Limpar dados</button>
                     <button type="submit" class="btn btn-primary">Cadastrar</button>
-                    <button type="reset" class="btn btn-warning">Limpar dados</button>
-                    <button type="menu" class="btn btn-secondary"><a href="{% url 'index' %}">Voltar</a></button>
                 {% endbuttons %}
                 
       

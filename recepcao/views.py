@@ -4,6 +4,8 @@ import pytz
 from django.http import request
 from django.shortcuts import render
 from django.views.generic.base import View
+
+from helpSUS.settings import TIME_ZONE
 from .forms import PatientForm, PatientUpdate
 from django.contrib import messages
 from django.shortcuts import redirect, reverse
@@ -138,9 +140,16 @@ class ViewAttendancesView(TemplateView):
         if 'filter' in self.request.GET and self.request.GET['filter']:
             date = self.request.GET['filter'].split('-')
             date1 = datetime.datetime(int(date[0]), int(date[1]), int(date[2]), 0, 0, 0)
+            date1 = pytz.timezone(TIME_ZONE).localize(date1)
             date2 = datetime.datetime(int(date[0]), int(date[1]), int(date[2]), 23, 59, 59)
-            sql = f"SELECT * FROM core_attendance a WHERE (a.created_at between '{date1.__str__()}' AND '{date2.__str__()}')"
-            attendances = Attendance.objects.raw(sql)
+            date2 = pytz.timezone(TIME_ZONE).localize(date2)
+
+            attendances = Attendance.objects.filter(
+                created_at__gte=date1,
+                created_at__lte=date2
+
+            )
+
             context['attendances'] = attendances
         else:
             today_start = Util.agora().replace(hour=0, minute=0, second=0)

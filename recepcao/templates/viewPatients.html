@@ -3,6 +3,7 @@
 {% load static %}
 {% block content %}
     <title>Pacientes cadastrados!</title>
+    <script src="{% static 'js/newPatient.js' %}"></script>
 </head>
 <body>
     <div class='container'>
@@ -46,9 +47,9 @@
                     {% csrf_token %}
                     {% bootstrap_form form %}
                     {% buttons %}
+                        <button type="menu" class="btn btn-secondary" onclick="backToHome()"><a href="{% url 'indexReception' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                        <button type="reset" class="btn btn-warning" style="color: white;">Limpar dados</button>
                         <button type="submit" class="btn btn-primary">Atualizar dados</button>
-                        <button type="reset" class="btn btn-warning">Limpar dados</button>
-                        <button type="menu" class="btn btn-secondary"><a href="{% url 'index' %}" style="color: white; text-decoration:none">Voltar</a></button>
                     {% endbuttons %}
                 </form> 
             {% endif %}

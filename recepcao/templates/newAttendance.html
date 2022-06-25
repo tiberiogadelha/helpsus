@@ -3,6 +3,7 @@
 {% load static %}
 {% block content %}
     <title>Novo Atendimento!</title>
+    <script src="{% static 'js/newAttendance.js' %}"></script>
 </head>
 <body>
     <div class='container'>
@@ -55,9 +56,9 @@
                     <br>
                     <br>
                 {% buttons %}
-                    <button type="submit" class="btn btn-success" id='btnNewAttendance' style="visibility: hidden;">Adicionar Atendimento</button>
-                    <button type="menu" class="btn btn-primary"><a href="{% url 'newPatient' %}" style="color: white; text-decoration:none">Cadastrar Paciente</a></button>
-                    <button type="menu" class="btn btn-info"><a href="{% url 'indexReception' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                    <button type="menu" class="btn btn-secondary" onclick="backToHome()">Voltar</button>
+                    <button type="menu" class="btn btn-warning"><a href="{% url 'newPatient' %}" style="color: white; text-decoration:none">Cadastrar Paciente</a></button>
+                    <button type="submit" class="btn btn-primary" id='btnNewAttendance' style="visibility: hidden;">Adicionar Atendimento</button>
                 {% endbuttons %}
                 
       
@@ -67,26 +68,7 @@
              
     </div>
 
-    <script>
 
-        function showButton() {
-            const checked = document.getElementById('confirm').checked;
-    
-            if (checked)
-                document.getElementById('btnNewAttendance').style.visibility = 'visible';
-            else
-                document.getElementById('btnNewAttendance').style.visibility = 'hidden';
-        }
-
-        function updateHour() {
-            const now = Date.now();
-            const date = new Date(now);
-            const div = document.getElementById('attendanceHour');
-            if (div) {
-                div.value = date.toLocaleDateString() + ' às ' + date.toLocaleTimeString().slice(0,5);
-            }
-        }      
-    </script>  
 
 {% bootstrap_javascript jquery='full' %}
 </body>

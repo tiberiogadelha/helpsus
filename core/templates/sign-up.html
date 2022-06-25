@@ -35,9 +35,9 @@
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% buttons %}
-                    <button type="submit" class="btn btn-primary">Cadastrar</button>
-                    <button type="reset" class="btn btn-warning">Limpar dados</button>
                     <button type="menu" class="btn btn-secondary"><a href="{% url 'index' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                    <button type="reset" class="btn btn-warning" style="color: white;">Limpar dados</button>
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
                 {% endbuttons %}
                 
       

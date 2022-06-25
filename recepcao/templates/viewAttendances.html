@@ -45,7 +45,7 @@
                             <td scope="row">{{attendance.created_at}}</td>
                             <td scope="row" style="text-align: center;">{{attendance.creation_hour}}</td>
                             <td scope="row">{{attendance.status}}</td>
-                            <td scope="row"><a href="{% url 'removeAttendance' %}?id={{attendance.id}}"><img src="{% static 'imgs/delete.png' %}" alt="X" style="width: 19px;"> </a></td>
+                            <td scope="row" style="display: flex; justify-content: center;"><a href="{% url 'removeAttendance' %}?id={{attendance.id}}"><img src="{% static 'imgs/delete.png' %}" alt="X" style="width: 19px;"> </a></td>
                         </tr>
                         {% endfor %} 
                     </tbody>

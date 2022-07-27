@@ -2,11 +2,14 @@ import json
 from datetime import datetime
 
 import pytz
+from django.http import request
+from django.contrib import messages
 from django.core.checks import messages
 
-from core.models import Attendance, AttendanceQueue
+from consultorio.services import getAllPendingAttendances
+from core.models import Attendance, AttendanceQueue, Patient
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic.base import TemplateView
 
 from helpSUS.settings import TIME_ZONE
@@ -60,36 +63,37 @@ class UpdateAttendanceMedView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateAttendanceMedView, self).get_context_data(**kwargs)
-        try:
-            id = self.request.GET.get('id')
-            attendance = Attendance.objects.get(id=id)
-            birth_date = attendance.patient.birth_date
-            age = f'{calculate_age(birth_date)} anos'
-            formated_date = attendance.patient.birth_date.strftime("%d/%m/%Y")
-            attendance.patient.formated_date = f'{formated_date} - Idade: {age} anos'
-            entrance = attendance.created_at.strftime("%d/%m/%Y")
-
-            if attendance.status == 'aguardando':
-                context["attendance"] = attendance
-                entrance = f'{entrance} às {str(attendance.creation_hour)[:5]}'
-                meta_data = {'age': age, 'entrance': entrance}
-                context['meta'] = meta_data
+        # try:
+        #     id = self.request.GET.get('id')
+        #     attendance = Attendance.objects.get(id=id)
+        #     birth_date = attendance.patient.birth_date
+        #     age = f'{calculate_age(birth_date)} anos'
+        #     formated_date = attendance.patient.birth_date.strftime("%d/%m/%Y")
+        #     attendance.patient.formated_date = f'{formated_date} - Idade: {age} anos'
+        #     entrance = attendance.created_at.strftime("%d/%m/%Y")
+        #
+        #     if attendance.status == 'aguardando':
+        #         context["attendance"] = attendance
+        #         entrance = f'{entrance} às {str(attendance.creation_hour)[:5]}'
+        #         meta_data = {'age': age, 'entrance': entrance}
+        #         context['meta'] = meta_data
 
            # form = TriagemForm() if (self.request.method == 'GET') else TriagemForm(self.request.POST)
 
-        except Attendance.DoesNotExist:
-            messages.error(request, 'Atendimento já realizado ou não encontrado.')
-            return super().get(request, **kwargs)
-        except Exception as e:
-            if self.request.method == 'POST':
-                form = TriagemForm(self.request.POST)
-            else:
-                form = TriagemForm()
-
-            context['form'] = form
-            return context
-        context['form'] = form
+        # except Attendance.DoesNotExist:
+        #     messages.error(request, 'Atendimento já realizado ou não encontrado.')
+        #     return super().get(request, **kwargs)
+        # except Exception as e:
+        #     if self.request.method == 'POST':
+        #         form = TriagemForm(self.request.POST)
+        #     else:
+        #         form = TriagemForm()
+        #
+        #     context['form'] = form
+        #     return context
+        # context['form'] = form
         return context
+
 
 class RequireExamView(LoginRequiredMixin, TemplateView):
     template_name = 'solicitarExameConsultorio.html'
@@ -97,15 +101,26 @@ class RequireExamView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(RequireExamView, self).get_context_data(**kwargs)
+        try:
+            if self.request.POST:
+                return
+            attendance_data = self.request.GET.get('attendance_data')
+            if attendance_data and attendance_data != 'data':
+                attendance = Attendance.objects.filter(
+                    id=attendance_data, status='triagem'
+                ).first()
 
-        attendances = Attendance.objects.filter(
-            status='consultorio',
-        ).order_by('-moment_consultorio')
+                if attendance is None:
+                    messages.error(self.request, "Atendimento finalizado ou inexistente!")
+                    return
 
-        context['atendimentos'] = attendances
+                context['attendanceData'] = attendance
 
+        except Exception as e:
+            messages.error(request, e.__str__())
+
+        context['attendances'] = getAllPendingAttendances()
         return context
-
 
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -117,13 +132,25 @@ class RequireMedView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(RequireMedView, self).get_context_data(**kwargs)
+        try:
+            if self.request.POST:
+                return
+            attendance_data = self.request.GET.get('attendance_data')
+            if attendance_data and attendance_data != 'data':
+                attendance = Attendance.objects.filter(
+                    id=attendance_data, status='triagem'
+                ).first()
 
-        attendances = Attendance.objects.filter(
-            status='consultorio',
-        ).order_by('-moment_consultorio')
+                if attendance is None:
+                    messages.error(self.request, "Atendimento finalizado ou inexistente!")
+                    return
 
-        context['atendimentos'] = attendances
+                context['attendanceData'] = attendance
 
+        except Exception as e:
+            messages.error(request, e.__str__())
+
+        context['attendances'] = getAllPendingAttendances()
         return context
 
     def get(self, request, *args, **kwargs):

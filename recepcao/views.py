@@ -1,6 +1,7 @@
 import datetime
 
 import pytz
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import request
 from django.shortcuts import render
 from django.views.generic.base import View
@@ -45,6 +46,7 @@ class PatientView(TemplateView):
             messages.error(request, e.__str__())
             return super().get(request, *args, **kwargs)
 
+
 class IndexReception(TemplateView):
     template_name = 'indexReception.html'
 
@@ -53,20 +55,22 @@ class IndexReception(TemplateView):
         context['att'] = '23232'
         return context
 
-class CreateAttendanceView(TemplateView):
+
+class CreateAttendanceView(LoginRequiredMixin, TemplateView):
     template_name = 'newAttendance.html'
+    login_url = '/'
 
     def get_context_data(self, **kwargs):
         context = super(CreateAttendanceView, self).get_context_data(**kwargs)
         try:
-            if (self.request.POST):
+            if self.request.POST:
                 return
-            if (self.request.GET.__contains__('patient_data')):
-                if (self.request.GET['patient_data'] != 'patient_data'):
+            if self.request.GET.__contains__('patient_data'):
+                if self.request.GET['patient_data'] != 'patient_data':
                     patient_id = self.request.GET['patient_data']
                     try:
                         patient = Patient.objects.filter(id=patient_id).first()
-                        if (not(patient)):
+                        if patient is None:
                             messages.error(self.request, "Paciente não encontrado. Faça o cadastro")
                             return redirect('newPatient')
                         context['userData'] = patient

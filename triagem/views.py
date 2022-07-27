@@ -26,6 +26,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
+
 class GetAttendancesView(LoginRequiredMixin, TemplateView):
     template_name = 'getAttendancesTriagem.html'
     login_url = '/'

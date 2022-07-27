@@ -2,7 +2,9 @@
 {% load bootstrap4 %}
 {% load static %}
 {% block content %}
-    <title>Solicitar Medicação!</title>
+    <title>Solicitar Medicações!</title>
+    <link rel="stylesheet" href="{% static 'style/style.css'%}">
+
 </head>
 <body>
     <div class='container'>
@@ -10,44 +12,52 @@
             <br>
             {% bootstrap_messages %}
             <br>
-            <form action="{% url 'newAttendance' %}" method="get">
+            <form action="{% url 'solicitarMedicamentoConsultorio' %}" method="get">
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="patient_span">Nome/CNS do paciente: </span>
                     </div>
-                    <input list="patients" type="text" id="patient_data" name="patient_data" class="form-control" aria-label="Default" aria-describedby="patient_data" onchange="this.form.submit()">
+                    <input list="attendances" type="text" id="attendance_data" name="attendance_data" class="form-control" aria-label="Default" aria-describedby="attendance_data" onchange="this.form.submit()">
                     <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
                 </div>
 
-                <datalist id="patients">
+                <datalist id="attendances">
                     {% for attendance in attendances %}
                         <option value="{{ attendance.id }}"> {{ attendance.patient }} </option>
                     {% endfor %}   
                 </datalist>
             </form>
-            <form action="{% url 'newAttendance' %}" method="post" class="form" autocomplete="on">
+            <form action="{% url 'solicitarMedicamentoConsultorio' %}" method="post" class="form" autocomplete="on">
                 {% csrf_token %}
                 
                 <div id="patient_values">
                
-                        <input type="number" name="patient_id" value="{{ userData.id }}" style="visibility: hidden;">
-                        <div class="form-floating">
-                            <label for="namePatient">Nome</label>
-                            <input type="text" class="form-control" id="namePatient" value="{{ userData.name }}" readonly>
+                        <input type="number" name="attendance_id" value="{{ attendanceData.id }}" style="visibility: hidden;">
+                        <div class="row">
+                            <div class="col-8 form-floating details-field">
+                                <label for="namePatient">Nome</label>
+                                <input type="text" class="form-control" id="namePatient" value="{{ attendanceData.patient.name }}" readonly>
+
+                            </div>
+                            <div class="col-4 form-floating details-field">
+                                <label for="cnsPatient">Data de nascimento</label>
+                                <input type="datetime" class="form-control" id="datePatient" value="{{ attendanceData.patient.birth_date }}" readonly>
+                            </div>
                         </div>
-                        <div class="form-floating">
-                            <label for="cnsPatient">Data de nascimento</label>
-                            <input type="datetime" class="form-control" id="datePatient" value="{{ userData.birth_date }}" readonly>
+
+                        <div class="row">
+                            <div class="col-8 details-field">
+                                <label for="cnsPatient">CNS</label>
+                                <input type="text" class="form-control" id="cnsPatient" value="{{ attendanceData.patient.cns }}" readonly>
+                            </div>
+
+                            <div class="col-4 details-field">
+                                <label for="attendanceHour">Data da solicitação: </label>
+                                <input type="datetime" class="form-control" id="attendanceHour" readonly>
+                            </div>
                         </div>
-                        <div class="form-floating">
-                            <label for="cnsPatient">CNS</label>
-                            <input type="text" class="form-control" id="cnsPatient" value="{{ userData.cns }}" readonly>
-                        </div>
-                        <div class="form-floating" onload="updateHour();">
-                            <label for="attendanceHour">Data do atendimento: </label>
-                            <input type="datetime" class="form-control" id="attendanceHour" readonly>
-                        </div>
-                        <div class="form-floating" onload="updateHour();">
+
+                        <div class="form-floating details-field" onload="updateHour();">
                             <label for="reqMed">Requisição do medicamento: </label>
                             <textarea class="form-control" id="reqMed" rows="4" cols="40"> </textarea>
                         </div>
@@ -60,8 +70,8 @@
                     <br>
                     <br>
                 {% buttons %}
-                    <button type="submit" class="btn btn-success" id='btnNewAttendance' style="visibility: hidden;">Adicionar Atendimento</button>
-                    <button type="menu" class="btn btn-info"><a href="{% url 'indexClinic' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                    <button type="menu" class="btn btn-secondary"><a href="{% url 'indexClinic' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                    <button type="submit" class="btn btn-success" id='btnNewMedRequest' disabled>Solicitar medicação</button>
                 {% endbuttons %}
                 
       
@@ -75,11 +85,11 @@
 
         function showButton() {
             const checked = document.getElementById('confirm').checked;
-    
-            if (checked)
-                document.getElementById('btnNewAttendance').style.visibility = 'visible';
+            console.log(checked);
+            if (!checked)
+                document.getElementById('btnNewMedRequest').setAttribute('disabled', 'disabled')
             else
-                document.getElementById('btnNewAttendance').style.visibility = 'hidden';
+                document.getElementById('btnNewMedRequest').removeAttribute('disabled')
         }
 
         function updateHour() {

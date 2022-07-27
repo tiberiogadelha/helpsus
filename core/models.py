@@ -11,7 +11,6 @@ from django.db.models import signals
 from queue import PriorityQueue
 import json
 
-from core.admin import MedicationOrder
 
 GENDER_CHOICES = (
         ('f', 'Feminino'),
@@ -172,9 +171,8 @@ class Employee(AbstractUser):
         return string
 
     def getCarimbo(self, employee):
-        print(employee)
         if employee.gender == 'm':
-            string = f'{employee.first_name} {employee.last_name} - {employee.role.npiame}/{employee.conselho}'
+            string = f'{employee.first_name} {employee.last_name} - {employee.role.name}/{employee.conselho}'
         else:
             string = f'{employee.first_name} {employee.last_name} - {employee.role.f_name}/{employee.conselho}'
         return string
@@ -183,8 +181,111 @@ class Employee(AbstractUser):
         verbose_name = 'Funcionário'
         verbose_name_plural = 'Funcionários'
 
+class VitalData(Base):
+    temperature = models.FloatField('Temperatura corporal', null=False, blank=False)
+    pas = models.IntegerField('Pressão sistólica', null=False, blank=False)
+    pad = models.IntegerField('Pressão diástolica', null=False, blank=False)
+    saturation = models.IntegerField('Saturação', null=False, blank=False)
+    heart_beats = models.IntegerField('Batimentos', null=False, blank=False)
+
+    def __str__(self) -> str:
+        string = f'Dados vitais({self.id}) - Temperatura: {self.temperature}°C, Pressão: sistólica {self.pas} mmHg, diastólica {self.pad} mmHg, Saturação: {self.saturation}%, Batimentos: {self.heart_beats}'
+        return string
+
+    class Meta:
+        verbose_name = 'Dados vitais'
+        verbose_name_plural = 'Dados vitais'
+
     
-        
+class Triagem(Base):
+    priority_enum = (
+        (0, 'Normal'),
+        (1, 'Moderada'),
+        (2, 'Alta')
+    )
+    responsible = models.ForeignKey(
+        Employee,
+        on_delete=models.deletion.PROTECT,
+        blank=False,
+        null=False,
+        related_name='responsavem_triagem'
+    )
+    vital_data = models.ForeignKey(
+        VitalData,
+        on_delete=models.deletion.PROTECT,
+        blank=False,
+        null=False,
+        related_name="Vitais",
+    )
+    priority = models.IntegerField('Prioridade', default=1, blank=False, null=False, choices=priority_enum)
+    description = models.TextField('Descrição dos sintomas', blank=False, null=False, max_length=800, default="")
+
+    def __str__(self):
+        employee = Employee()
+        carimbo = employee.getCarimbo(self.responsible)
+        string = f'Triagem({self.id}) - Prioridade: {self.priority}, Responsável:{carimbo}'
+        return string
+
+    class Meta:
+        verbose_name = 'Triagem'
+        verbose_name_plural = 'Triagens'
+
+
+def get_default_queue():
+    return {"attendances": []}
+
+
+class AttendanceQueue(models.Model):
+    attendances = jsonfield.JSONField(blank=True, default=json.dumps([]))
+
+    def __str__(self) -> str:
+        attendances = json.loads(self.attendances)
+        result = []
+        for attendance in attendances:
+            result.append(f'Atendimento {attendance["num"]}')
+
+        return ' '.join(result)
+
+
+class MedicationOrder(Base):
+    status_enum = (
+        (0, 'Pendente'),
+        (1, 'Liberado')
+    )
+
+    id = models.CharField('Identificador', max_length=100, primary_key=True)
+    requested_by = models.ForeignKey(Employee, blank=False, null=False, on_delete=models.deletion.PROTECT,
+                                     related_name='solicitante_medicacao')
+    released_by = models.ForeignKey(Employee, blank=True, null=True, on_delete=models.deletion.PROTECT,
+                                    related_name='responsavel_medicacao')
+    order = models.TextField('Solicitação', max_length=5000, null=False, blank=False)
+    was_released = models.BooleanField(default=False)
+    status = models.IntegerField('Status', default=0, choices=status_enum)
+
+    class Meta:
+        verbose_name = 'Solicitação de medicamento'
+        verbose_name_plural = 'Solicitações de medicamento'
+
+
+class ExamOrder(Base):
+    status_enum = (
+        (0, 'Pendente'),
+        (1, 'Liberado')
+    )
+
+    id = models.CharField('Identificador', max_length=100, primary_key=True)
+    requested_by = models.ForeignKey(Employee, blank=False, null=False, on_delete=models.deletion.PROTECT,
+                                     related_name='solicitante_exame')
+    released_by = models.ForeignKey(Employee, blank=True, null=True, on_delete=models.deletion.PROTECT,
+                                    related_name='responsavel_exame')
+    order = models.TextField('Solicitação', max_length=5000, null=False, blank=False)
+    was_released = models.BooleanField(default=False)
+    status = models.IntegerField('Status', default=0, choices=status_enum)
+
+    class Meta:
+        verbose_name = 'Solicitação de exame'
+        verbose_name_plural = 'Solicitações de exames'
+
 
 class Attendance(Base):
     enum_status = (
@@ -194,6 +295,7 @@ class Attendance(Base):
         ('encerrado', 'Encerrado')
 
     )
+
     patient = models.ForeignKey(
         Patient,
         on_delete=models.CASCADE,
@@ -218,9 +320,13 @@ class Attendance(Base):
         related_name='Triagem'
     )
 
-    medication_orders = models.ManyToManyField(related_name='Solicitações de medicamentos', MedicationOrder, blank=True)
-    #exams_orders = models.ManyToManyField(related_name='Solicitações de exames', )
+    medication_orders = models.ManyToManyField(
+        MedicationOrder, related_name='medicamentos', blank=True
+    )
 
+    exams_orders = models.ManyToManyField(
+        ExamOrder, related_name='exames', blank=True
+    )
 
     def __str__(self):
         formated_date = self.created_at.strftime('%d/%m/%Y')
@@ -228,9 +334,9 @@ class Attendance(Base):
     
     def __lt__(self, other):
         if isinstance(other, Attendance):
-            if (self.created_at < other.created_at):
+            if self.created_at < other.created_at:
                 return True
-            elif (self.created_at == other.created_at):
+            elif self.created_at == other.created_at:
                 return self.creation_hour <= other.creation_hour
             return False
         else:
@@ -240,85 +346,3 @@ class Attendance(Base):
         verbose_name = 'Atendimento'
         verbose_name_plural = 'Atendimentos'
 
-        
-class VitalData(Base):
-    temperature = models.FloatField('Temperatura corporal', null=False, blank=False)
-    pas = models.IntegerField('Pressão sistólica', null=False, blank=False)
-    pad = models.IntegerField('Pressão diástolica', null=False, blank=False)
-    saturation = models.IntegerField('Saturação', null=False, blank=False)
-    heart_beats = models.IntegerField('Batimentos', null=False, blank=False)
-
-    def __str__(self) -> str:
-        string = f'Dados vitais({self.id}) - Temperatura: {self.temperature}°C, Pressão: sistólica {self.pas} mmHg, diastólica {self.pad} mmHg, Saturação: {self.saturation}%, Batimentos: {self.heart_beats}'
-        return string
-        
-    class Meta:
-        verbose_name = 'Dados vitais'
-        verbose_name_plural = 'Dados vitais'
-
-class Triagem(Base):
-    priority_enum = (
-        (0, 'Normal'),
-        (1, 'Moderada'),
-        (2, 'Alta')
-    )
-    responsible = models.ForeignKey(
-        Employee,
-        on_delete=models.deletion.PROTECT,
-        blank=False,
-        null=False,
-        related_name='Responsável'
-    )
-    vital_data = models.ForeignKey(
-        VitalData,
-        on_delete=models.deletion.PROTECT,
-        blank=False,
-        null=False,
-        related_name="Vitais",
-    )
-    priority = models.IntegerField('Prioridade', default=1, blank=False, null=False, choices=priority_enum)
-    description = models.TextField('Descrição dos sintomas', blank=False, null=False, max_length=800, default="")
-
-    def __str__(self):
-        employee = Employee()
-        carimbo = employee.getCarimbo(self.responsible)
-        string = f'Triagem({self.id}) - Prioridade: {self.priority}, {self.attendance}, {self.vital_data} Responsável:{carimbo}'
-        return string
-
-    class Meta:
-        verbose_name = 'Triagem'
-        verbose_name_plural = 'Triagens'
-
-def get_default_queue():
-        return {"attendances": []}
-
-
-class AttendanceQueue(models.Model):
-    attendances = jsonfield.JSONField(blank=True, default=json.dumps([]))
-
-    def __str__(self) -> str:
-        attendances = json.loads(self.attendances)
-        result = []
-        for attendance in attendances:
-            result.append(f'Atendimento {attendance["num"]}')
-
-        return ' '.join(result)
-
-
-class MedicationOrder(Base):
-    status_enum = (
-        (0, 'Pendente'),
-        (1, 'Liberado')
-    )
-
-    id = models.CharField('Identificador', max_length=100, unique=True)
-    requested_by = models.ForeignKey(Employee, blank=False, null=False, on_delete=models.deletion.PROTECT, related_name='Solicitante')
-    released_by = models.ForeignKey(Employee, blank=True, null=True, on_delete=models.deletion.PROTECT, related_name='Responsável')
-    attendance = models.ForeignKey(Attendance, blank=False, null=False, on_delete=models.deletion.PROTECT, related_name='Atendimento')
-    order = models.TextField('Solicitação', max_length=5000, null=False, blank=False)
-    was_released = models.BooleanField(default=False)
-    status = models.IntegerField('Status', default=0, choices=status_enum)
-
-    class Meta:
-        verbose_name = 'Solicitação de medicamento'
-        verbose_name_plural = 'Solicitações de medicamento'

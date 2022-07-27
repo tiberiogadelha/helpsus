@@ -36,7 +36,7 @@
 
                     <div class="d-flex justify-content-sm-start">
                         <input type="checkbox" onchange="updateBtn();" id="defaultCheck1">
-                        <label  for="defaultCheck1"> Todos os dados conferidos?
+                        <label  for="defaultCheck1"> Confirmar exclusão
                     </div>
 
                 </div>
@@ -59,8 +59,8 @@
                         <input type="text" name="attendance_id" style="visibility: hidden;" value="{{ attendance.id }}">
                     {% endif %}
                     {% csrf_token %}
-                    <button id="removeBtn" style="visibility: hidden;"class="btn btn-warning">Remover</button>
                     <button type="menu" class="btn btn-info"><a href="{% url 'indexReception' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                    <button id="removeBtn" style="visibility: hidden;" class="btn btn-primary">Remover</button>
                 </form>
             {% endbuttons %}
         </center>
@@ -71,7 +71,8 @@
         function updateBtn() {
             const btn = document.getElementById('removeBtn');
             const checked = document.getElementById('defaultCheck1');
-            if (checked.value == "on") 
+            btn.style.visibility = 'visible';
+            if (checked.check == "on") 
                 btn.style.visibility = 'visible'
             else
                 btn.style.visibility = 'hidden'

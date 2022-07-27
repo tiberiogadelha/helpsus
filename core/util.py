@@ -12,7 +12,7 @@ roles_department = {
 class Validate:
     def validateUserDepartment(self, user, department):
         try:
-            if(user.role.cod == 'coord' or user.role.cod == 'dir'):
+            if user.role.cod == 'coord' or user.role.cod == 'dir':
                 return True
             return department in roles_department[user.role.cod]
         except:

@@ -207,26 +207,28 @@ class EditPatientView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(EditPatientView, self).get_context_data(**kwargs)
         try:
-            if (self.request.POST):
+            if self.request.POST:
                 return
-            if (self.request.GET.__contains__('patient_data')):
-                if (self.request.GET['patient_data'] != 'patient_data'):
-                    if (self.request.method == 'GET'):
-                        patient_id = self.request.GET['patient_data']
+
+            patient_data = self.request.GET.get('patient_data')
+            if patient_data != 'patient_data' and patient_data is not None:
+                if self.request.method == 'GET':
+                    patient_id = self.request.GET['patient_data']
+                else:
+                    patient_id = self.request.POST['id_patient']
+                try:
+                    patient = Patient.objects.filter(id=patient_id).first()
+                    if patient is None:
+                        messages.error(self.request, "Paciente não encontrado. Faça o cadastro")
+                        return redirect('editPatient')
+
+                    context['userData'] = patient
+                    if self.request.method != 'GET':
+                        context['form'] = PatientUpdate(self.request.POST)
                     else:
-                        patient_id = self.request.POST['id_patient']
-                    try:
-                        patient = Patient.objects.filter(id=patient_id).first()
-                        if (not(patient)):
-                            messages.error(self.request, "Paciente não encontrado. Faça o cadastro")
-                            return redirect('editPatient')
-                        context['userData'] = patient
-                        if(self.request.method != 'GET'):
-                            context['form'] = PatientUpdate(self.request.POST)
-                        else:
-                            context['form'] = PatientUpdate(instance=patient)
-                    except Patient.DoesNotExist:
-                            messages.error(self.request, "Paciente não encontrado. Faça o cadastro!")
+                        context['form'] = PatientUpdate(instance=patient)
+                except Patient.DoesNotExist:
+                        messages.error(self.request, "Paciente não encontrado. Faça o cadastro!")
         except Exception as e:
             messages.error(request, e.__str__())
 

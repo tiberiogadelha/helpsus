@@ -1,4 +1,7 @@
+import enum
 from datetime import datetime
+
+import jsonfield
 from django.db import models
 from django.db.models.fields.related import ForeignKey
 from django.forms import JSONField
@@ -8,8 +11,7 @@ from django.db.models import signals
 from queue import PriorityQueue
 import json
 
-
-# Create your models here.
+from core.admin import MedicationOrder
 
 GENDER_CHOICES = (
         ('f', 'Feminino'),
@@ -171,8 +173,8 @@ class Employee(AbstractUser):
 
     def getCarimbo(self, employee):
         print(employee)
-        if(employee.gender == 'm'):
-            string = f'{employee.first_name} {employee.last_name} - {employee.role.name}/{employee.conselho}'
+        if employee.gender == 'm':
+            string = f'{employee.first_name} {employee.last_name} - {employee.role.npiame}/{employee.conselho}'
         else:
             string = f'{employee.first_name} {employee.last_name} - {employee.role.f_name}/{employee.conselho}'
         return string
@@ -202,10 +204,23 @@ class Attendance(Base):
     num = models.IntegerField('Número atendimento', default=0, blank=False, null=False)
     status = models.CharField('Status', default='aguardando', choices=enum_status, max_length=30)
     moment_triagem = models.DateTimeField('Momento da triagem', blank=True, null=True)
+    sign_attendance = models.CharField('Assinatura atendimento', max_length=400, default='')
     moment_consultorio = models.DateTimeField('Momento da consulta', blank=True, null=True)
     moment_encerramento = models.DateTimeField('Momento do encerramento', blank=True, null=True)
     creation_hour = models.TimeField('Hora da criação', blank=False, default=datetime.time(datetime.now()))
     priority = models.IntegerField('Prioridade', default=0)
+
+    triage_reference = models.ForeignKey(
+        Triagem,
+        on_delete=models.deletion.PROTECT,
+        blank=True,
+        null=True,
+        related_name='Triagem'
+    )
+
+    medication_orders = models.ManyToManyField(related_name='Solicitações de medicamentos', MedicationOrder, blank=True)
+    #exams_orders = models.ManyToManyField(related_name='Solicitações de exames', )
+
 
     def __str__(self):
         formated_date = self.created_at.strftime('%d/%m/%Y')
@@ -247,28 +262,21 @@ class Triagem(Base):
         (1, 'Moderada'),
         (2, 'Alta')
     )
-    attendance = models.ForeignKey(
-        Attendance,
-        on_delete=models.CASCADE,
-        blank=False,
-        null=False,
-        related_name='Atendimento'
-    )
     responsible = models.ForeignKey(
         Employee,
-        on_delete=models.CASCADE,
+        on_delete=models.deletion.PROTECT,
         blank=False,
         null=False,
         related_name='Responsável'
     )
     vital_data = models.ForeignKey(
         VitalData,
-        on_delete=models.CASCADE,
+        on_delete=models.deletion.PROTECT,
         blank=False,
         null=False,
-        related_name= "Vitais",
+        related_name="Vitais",
     )
-    priority = models.IntegerField('Prioridade', default= 1, blank=False, null=False, choices=priority_enum) 
+    priority = models.IntegerField('Prioridade', default=1, blank=False, null=False, choices=priority_enum)
     description = models.TextField('Descrição dos sintomas', blank=False, null=False, max_length=800, default="")
 
     def __str__(self):
@@ -282,18 +290,35 @@ class Triagem(Base):
         verbose_name_plural = 'Triagens'
 
 def get_default_queue():
-        return {"attendances":[]}
+        return {"attendances": []}
+
+
 class AttendanceQueue(models.Model):
-    attendances = JSONField()
+    attendances = jsonfield.JSONField(blank=True, default=json.dumps([]))
 
     def __str__(self) -> str:
-        ##array = json.loads(self.attendances)
-        a= json.loads(self.attendances)
-        return self.attendances
-        for element in array:
-            attendance = json.loads(element)
-            f'Atendimento ({self.num}): Paciente {self.patient} - Status {self.status} - Data {formated_date} às {str(self.creation_hour)[:5]}'
-            formated = f''
-        return string
+        attendances = json.loads(self.attendances)
+        result = []
+        for attendance in attendances:
+            result.append(f'Atendimento {attendance["num"]}')
+
+        return ' '.join(result)
 
 
+class MedicationOrder(Base):
+    status_enum = (
+        (0, 'Pendente'),
+        (1, 'Liberado')
+    )
+
+    id = models.CharField('Identificador', max_length=100, unique=True)
+    requested_by = models.ForeignKey(Employee, blank=False, null=False, on_delete=models.deletion.PROTECT, related_name='Solicitante')
+    released_by = models.ForeignKey(Employee, blank=True, null=True, on_delete=models.deletion.PROTECT, related_name='Responsável')
+    attendance = models.ForeignKey(Attendance, blank=False, null=False, on_delete=models.deletion.PROTECT, related_name='Atendimento')
+    order = models.TextField('Solicitação', max_length=5000, null=False, blank=False)
+    was_released = models.BooleanField(default=False)
+    status = models.IntegerField('Status', default=0, choices=status_enum)
+
+    class Meta:
+        verbose_name = 'Solicitação de medicamento'
+        verbose_name_plural = 'Solicitações de medicamento'

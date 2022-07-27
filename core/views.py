@@ -41,17 +41,16 @@ class IndexView(TemplateView):
             department = request.POST['department_select']
             user = authenticate(request, username=email, password=password)
             if user is not None:
-                if (not(user.is_enabled)):
+                if not user.is_enabled:
                     messages.error(request, 'Sua conta ainda não foi aceita. Aguarde aprovação!')
                     return super().get(request, *args, **kwargs)
                 
                 validator = Validate()
                 is_valid = validator.validateUserDepartment(user, department)
-                if (not(is_valid)):
+                if not is_valid:
                     messages.error(request, f'Você não tem acesso a este setor: {department}')
                     return super().get(request, *args, **kwargs)
-                   
-                
+
                 login(request, user)
                 route = f'{ROUTER_TABLE[department]}'
                 return redirect(route)

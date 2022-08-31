@@ -1,4 +1,5 @@
 import enum
+import uuid
 from datetime import datetime
 
 import jsonfield
@@ -28,7 +29,6 @@ class Base(models.Model):
 
 class FichaHandler(models.Model):
     num = models.IntegerField('Nº Ficha')
-    
     
 
 class User(Base):
@@ -84,8 +84,6 @@ class Patient(Base):
         date = self.birth_date.strftime('%d/%m/%Y')
         return f'{self.name} - CNS: {self.cns} - Data de nascimento: {date}'
 
-
-
     
 class Role(models.Model):
     ROLES = (
@@ -137,7 +135,6 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_enabled', True)
 
         return self._create_user(email, password, **extra_fields)
-
 
 
 class Employee(AbstractUser):
@@ -250,10 +247,11 @@ class AttendanceQueue(models.Model):
 class MedicationOrder(Base):
     status_enum = (
         (0, 'Pendente'),
-        (1, 'Liberado')
+        (1, 'Liberado'),
+        (2, 'Recusado')
     )
 
-    id = models.CharField('Identificador', max_length=100, primary_key=True)
+    id = models.CharField('Identificador', max_length=100, primary_key=True,  default=uuid.uuid4)
     requested_by = models.ForeignKey(Employee, blank=False, null=False, on_delete=models.deletion.PROTECT,
                                      related_name='solicitante_medicacao')
     released_by = models.ForeignKey(Employee, blank=True, null=True, on_delete=models.deletion.PROTECT,
@@ -261,6 +259,7 @@ class MedicationOrder(Base):
     order = models.TextField('Solicitação', max_length=5000, null=False, blank=False)
     was_released = models.BooleanField(default=False)
     status = models.IntegerField('Status', default=0, choices=status_enum)
+    released_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'Solicitação de medicamento'
@@ -273,7 +272,7 @@ class ExamOrder(Base):
         (1, 'Liberado')
     )
 
-    id = models.CharField('Identificador', max_length=100, primary_key=True)
+    id = models.CharField('Identificador', max_length=100, primary_key=True, default=uuid.uuid4)
     requested_by = models.ForeignKey(Employee, blank=False, null=False, on_delete=models.deletion.PROTECT,
                                      related_name='solicitante_exame')
     released_by = models.ForeignKey(Employee, blank=True, null=True, on_delete=models.deletion.PROTECT,

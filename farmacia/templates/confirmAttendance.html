@@ -1,0 +1,45 @@
+{% extends 'baseReception.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Atendimento confirmado</title>
+</head>
+<body>
+    <div class='container'>
+        <center>
+            <br>
+            {% bootstrap_messages %}
+            <br>
+            <div class="container-sm">
+                <h3> <img src="{% static 'imgs/icone-confirm.webp' %}" style="width: 5%; margin-right: 10px;" class="img-fluid" alt="OK"> Atendimento criado com sucesso!</h3>
+                <p style="padding-left: 20px; text-align: center;">Nome do paciente: <b>{{ nome }}</b></p>
+                <p style="padding-left: 20px; text-align: center;">Número da ficha: <b>{{ficha}}</b></p>
+                <p style="padding-left: 20px; text-align: center;" id='moment_p'></p>
+                <p style="padding-left: 20px; text-align: center;" id='horario_p'></p>
+            </div>
+            {% buttons %}
+                <button type="menu" class="btn btn-info"><a href="{% url 'indexReception' %}" style="color: white; text-decoration:none">Voltar</a></button>
+            {% endbuttons %}
+        </center>
+             
+    </div>
+
+    <script>
+        const moment = new Date(Date.now()).toLocaleDateString();
+        const paragraph = document.getElementById('moment_p');
+        const message = `Atendimento criado em: <b>${moment}</b>`;
+        paragraph.innerHTML = message;
+
+        const horario = new Date(Date.now()).toLocaleTimeString();
+        const horarioParagraph = document.getElementById('horario_p');
+        const messsageParagraph = `Horário: às <b>${horario}</b>`;
+        horarioParagraph.innerHTML = messsageParagraph;
+
+        
+    </script>
+
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

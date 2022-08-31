@@ -1,8 +1,9 @@
-{% extends 'baseConsultorio.html'%}
+{% extends 'baseReception.html'%}
 {% load bootstrap4 %}
 {% load static %}
 {% block content %}
-    <title>Solicitar Exames!</title>
+    <title>Novo Atendimento!</title>
+    <script src="{% static 'js/newAttendance.js' %}"></script>
 </head>
 <body>
     <div class='container'>
@@ -10,22 +11,21 @@
             <br>
             {% bootstrap_messages %}
             <br>
-            <form action="{% url 'solicitarMedicamentoConsultorio' %}" method="get">
+            <form action="{% url 'newAttendance' %}" method="get">
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="patient_span">Nome/CNS do paciente: </span>
+                        <span class="input-group-text" id="patient_span">Nome/CPF/CNS do paciente: </span>
                     </div>
                     <input list="patients" type="text" id="patient_data" name="patient_data" class="form-control" aria-label="Default" aria-describedby="patient_data" onchange="this.form.submit()">
-                    <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
                 </div>
 
                 <datalist id="patients">
-                    {% for attendance in attendances %}
-                        <option value="{{ attendance.id }}"> {{ attendance.patient }} </option>
+                    {% for patient in patients %}
+                        <option value="{{ patient.id }}"> {{ patient }} </option>
                     {% endfor %}   
                 </datalist>
             </form>
-            <form action="{% url 'solicitarMedicamentoConsultorio' %}" method="post" class="form" autocomplete="on">
+            <form action="{% url 'newAttendance' %}" method="post" class="form" autocomplete="on">
                 {% csrf_token %}
                 
                 <div id="patient_values">
@@ -56,8 +56,9 @@
                     <br>
                     <br>
                 {% buttons %}
-                    <button type="submit" class="btn btn-success" id='btnNewAttendance' style="visibility: hidden;">Adicionar Atendimento</button>
-                    <button type="menu" class="btn btn-info"><a href="{% url 'indexClinic' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                    <button type="menu" class="btn btn-secondary" onclick="backToHome()">Voltar</button>
+                    <button type="menu" class="btn btn-warning"><a href="{% url 'newPatient' %}" style="color: white; text-decoration:none">Cadastrar Paciente</a></button>
+                    <button type="submit" class="btn btn-primary" id='btnNewAttendance' style="visibility: hidden;">Adicionar Atendimento</button>
                 {% endbuttons %}
                 
       
@@ -67,26 +68,7 @@
              
     </div>
 
-    <script>
 
-        function showButton() {
-            const checked = document.getElementById('confirm').checked;
-    
-            if (checked)
-                document.getElementById('btnNewAttendance').style.visibility = 'visible';
-            else
-                document.getElementById('btnNewAttendance').style.visibility = 'hidden';
-        }
-
-        function updateHour() {
-            const now = Date.now();
-            const date = new Date(now);
-            const div = document.getElementById('attendanceHour');
-            if (div) {
-                div.value = date.toLocaleDateString() + ' às ' + date.toLocaleTimeString().slice(0,5);
-            }
-        }      
-    </script>  
 
 {% bootstrap_javascript jquery='full' %}
 </body>

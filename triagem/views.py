@@ -130,8 +130,6 @@ class UpdateAttendanceView(LoginRequiredMixin, TemplateView):
                 triagem.responsible = request.user
                 triagem.vital_data = created_vital
                 triagem.save()
-
-                attendance.tri
                 
                 allocate_patient(attendance)
                 messages.success(request, 'Triagem do paciente finalizada!')
@@ -170,6 +168,7 @@ class EditLastAttendanceView(LoginRequiredMixin, TemplateView):
             triagem = Triagem.objects.raw(sql_triagem)
             form = TriagemForm() if (self.request.method == 'GET') else TriagemForm(self.request.POST)
             context['triagem'] = triagem[0]
+
         except Exception as e:
             print(e.__str__())
             if (self.request.method == 'POST'):

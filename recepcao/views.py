@@ -105,6 +105,7 @@ class CreateAttendanceView(LoginRequiredMixin, TemplateView):
 
             if not patient:
                 messages.error(request, 'Paciente não encontrado')
+
             attendance = Attendance()
             util = Util()
             ficha = util.getFicha()

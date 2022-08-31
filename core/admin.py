@@ -46,4 +46,4 @@ class AttendanceQueueAdmin(admin.ModelAdmin):
 
 @admin.register(MedicationOrder)
 class MedicationOrder(admin.ModelAdmin):
-    list_display = ('id', 'status')
+    list_display = ['id', 'status']

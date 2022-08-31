@@ -2,12 +2,12 @@ import json
 from datetime import datetime
 
 import pytz
+from django.db import transaction
 from django.http import request
 from django.contrib import messages
-from django.core.checks import messages
 
 from consultorio.services import getAllPendingAttendances
-from core.models import Attendance, AttendanceQueue, Patient
+from core.models import Attendance, AttendanceQueue, Patient, MedicationOrder
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views.generic.base import TemplateView
@@ -155,6 +155,26 @@ class RequireMedView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        attendance_id = request.POST['attendance_id']
+        attendance = Attendance.objects.filter(id=attendance_id).first()
+
+        if attendance is None:
+            messages.error(request, 'Atendimento não encontrado')
+            return super().get(request, *args, **kwargs)
+
+        order = MedicationOrder(
+            order=request.POST['reqMed'],
+            requested_by=request.user
+        )
+
+        order.save()
+        messages.success(request, 'Medicação solicitada com sucesso!')
+        return super().get(request, *args, **kwargs)
+
+
 
 
 class IssueSickNoteView(LoginRequiredMixin, TemplateView):

@@ -40,12 +40,12 @@
 
                             </div>
                             <div class="col-4 form-floating details-field">
-                                <label for="cnsPatient">Data de nascimento</label>
-                                <input type="datetime" class="form-control" id="datePatient" value="{{ attendanceData.patient.birth_date }}" readonly>
+                                <label for="datePatient">Data de nascimento</label>
+                                <input type="text" class="form-control" id="datePatient" value="{{ attendanceData.patient.birth_date }}" readonly>
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row" style="margin-top:  24px">
                             <div class="col-8 details-field">
                                 <label for="cnsPatient">CNS</label>
                                 <input type="text" class="form-control" id="cnsPatient" value="{{ attendanceData.patient.cns }}" readonly>
@@ -53,15 +53,16 @@
 
                             <div class="col-4 details-field">
                                 <label for="attendanceHour">Data da solicitação: </label>
-                                <input type="datetime" class="form-control" id="attendanceHour" readonly>
+                                <input type="text" class="form-control" id="attendanceHour" readonly>
                             </div>
                         </div>
 
-                        <div class="form-floating details-field" onload="updateHour();">
-                            <label for="reqMed">Requisição do medicamento: </label>
-                            <textarea class="form-control" id="reqMed" rows="4" cols="40"> </textarea>
+                        <div class="form-floating details-field" style="margin-top:  24px" onload="updateHour();">
+                            <label for="reqMed">Requisição da medicação: </label>
+                            <textarea class="form-control" id="reqMed" name="reqMed" rows="4" cols="40"> </textarea>
                         </div>
-                        <div class="form-floating">
+
+                        <div class="form-floating" style="margin-top: 24px">
                             <input class="form-check-input" type="checkbox" id="confirm" name="confirm" onclick="showButton();updateHour();">
                             <label class="form-check-label" for="confirm">Dados confirmados?</label>
                         </div>

@@ -31,12 +31,12 @@ def mount_default_dashboard_info():
     qty_employees = Employee.objects.only('pk', 'is_enabled').filter(is_enabled=True).count()
 
     return {
-        'qty_patients': qty_patients,
-        'qty_finished_attendance': qty_finished_attendance,
-        'qty_exams_orders': qty_exams_orders,
-        'qty_medications_orders': qty_medications_orders,
-        'qty_sick_notes': qty_sick_notes,
-        'qty_employees': qty_employees
+        'qty_total_patients': qty_patients,
+        'qty_total_finished_attendance': qty_finished_attendance,
+        'qty_total_exams_orders': qty_exams_orders,
+        'qty_total_medications_orders': qty_medications_orders,
+        'qty_total_sick_notes': qty_sick_notes,
+        'qty_total_employees': qty_employees
     }
 
 

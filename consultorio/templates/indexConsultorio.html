@@ -3,33 +3,187 @@
 {% load static %}
 {% block content %}
     <title>Consultório!</title>
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <script src="{% static '/js/baseconsultorio.js' %}"></script>
 </head>
 <body>
-    <div class='container'>
-        <center>
-            <br>
-            {% bootstrap_messages %}
-            <br>
-            <a href="https://www.qries.com/">
-                <img alt="Qries" src="https://www.qries.com/images/banner_logo.png"
-                width=150" height="70">
-             </a>
-             <a href="https://www.qries.com/">
-                <img alt="Qries" src="https://www.qries.com/images/banner_logo.png"
-                width=150" height="70">
-             </a>
-             <a href="https://www.qries.com/">
-                <img alt="Qries" src="https://www.qries.com/images/banner_logo.png"
-                width=150" height="70">
-             </a>
-             <br>
-             <a href="https://www.qries.com/">
-                <img alt="Qries" src="https://www.qries.com/images/banner_logo.png"
-                width=150" height="70">
-             </a>
-        </center>
-             
-    </div>
+    <div class='body-content'>
+        <br>
+        {% bootstrap_messages %}
+        <br>
+
+        <div class="row">
+            <div class="col-4 alert alert-primary" role="alert">
+                <span>Olá, {{ user_name }}! Seja bem-vindo ao consultório!</span>
+                
+            </div>
+            <div class="col-4">
+                
+            </div>
+            <div class="col-4 alert alert-dark" role="alert">
+                <p>Data/Hora: <span id="datetimebox"></span> </p>
+                <script>
+                    setInterval(() => {
+                        getDatetime();
+                    }, 1000)
+
+                </script> 
+            </div>
+
+        </div>
+
+
+
+        <div class="options-div">
+            <button type="button" onclick="redirectTo('createPatient')" class="btn btn-secondary option-button">
+                <div class="row">
+                    <div class="col-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-clipboard-pulse" viewBox="0 0 40 20">
+                            <path fill-rule="evenodd" d="M10 1.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1Zm-5 0A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5v1A1.5 1.5 0 0 1 9.5 4h-3A1.5 1.5 0 0 1 5 2.5v-1Zm-2 0h1v1H3a1 1 0 0 0-1 1V14a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3.5a1 1 0 0 0-1-1h-1v-1h1a2 2 0 0 1 2 2V14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3.5a2 2 0 0 1 2-2Zm6.979 3.856a.5.5 0 0 0-.968.04L7.92 10.49l-.94-3.135a.5.5 0 0 0-.895-.133L4.232 10H3.5a.5.5 0 0 0 0 1h1a.5.5 0 0 0 .416-.223l1.41-2.115 1.195 3.982a.5.5 0 0 0 .968-.04L9.58 7.51l.94 3.135A.5.5 0 0 0 11 11h1.5a.5.5 0 0 0 0-1h-1.128L9.979 5.356Z"/>
+                        </svg>
+
+
+                    </div>
+
+                    <div class="col-9 option-text "><span>Atender paciente</span></div>
+
+                </div>
+              
+            </button>
+
+            <button type="button" onclick="redirectTo('createPatient')" class="btn btn-secondary option-button">
+                <div class="row">
+                    <div class="col-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-list-ul" viewBox="0 0 40 20">
+                            <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                        </svg>
+                    </div>
+
+                    <div class="col-9 option-text "><span>Exibir atendimentos</span></div>
+
+                </div>
+              
+            </button>
+
+            <button type="button" onclick="redirectTo('editPatient')" class="btn btn-secondary option-button">
+                <div class="row">
+                    <div class="col-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-heart-pulse" viewBox="0 0 40 20">
+                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053.918 3.995.78 5.323 1.508 7H.43c-2.128-5.697 4.165-8.83 7.394-5.857.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17c3.23-2.974 9.522.159 7.394 5.856h-1.078c.728-1.677.59-3.005.108-3.947C13.486.878 10.4.28 8.717 2.01L8 2.748ZM2.212 10h1.315C4.593 11.183 6.05 12.458 8 13.795c1.949-1.337 3.407-2.612 4.473-3.795h1.315c-1.265 1.566-3.14 3.25-5.788 5-2.648-1.75-4.523-3.434-5.788-5Z"/>
+                            <path d="M10.464 3.314a.5.5 0 0 0-.945.049L7.921 8.956 6.464 5.314a.5.5 0 0 0-.88-.091L3.732 8H.5a.5.5 0 0 0 0 1H4a.5.5 0 0 0 .416-.223l1.473-2.209 1.647 4.118a.5.5 0 0 0 .945-.049l1.598-5.593 1.457 3.642A.5.5 0 0 0 12 9h3.5a.5.5 0 0 0 0-1h-3.162l-1.874-4.686Z"/>
+                        </svg>
+
+
+                    </div>
+
+                    <div class="col-9 option-text ">Solicitar Exames</div>
+
+                </div>
+              
+            </button>
+
+            <button type="button" onclick="redirectTo('editPatient')" class="btn btn-secondary option-button">
+                <div class="row">
+                    <div class="col-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-list-ul" viewBox="0 0 40 20">
+                            <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                        </svg>
+                    </div>
+
+                    <div class="col-9 option-text ">Exibir exames solicitados</div>
+
+                </div>
+              
+            </button>
+        </div>
+
+        <div class="options-div">
+            <button type="button" onclick="redirectTo('newAttendance')" class="btn btn-secondary option-button">
+                <div class="row">
+                    <div class="col-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-capsule" viewBox="0 0 40 20">
+                            <path d="M1.828 8.9 8.9 1.827a4 4 0 1 1 5.657 5.657l-7.07 7.071A4 4 0 1 1 1.827 8.9Zm9.128.771 2.893-2.893a3 3 0 1 0-4.243-4.242L6.713 5.429l4.243 4.242Z"/>
+                        </svg>
+                    </div>
+
+                    <div class="col-9 option-text ">Solicitar medicamentos</div>
+                </div>
+              
+            </button>
+
+            <button type="button" onclick="redirectTo('newAttendance')" class="btn btn-secondary option-button">
+                <div class="row">
+                    <div class="col-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-list-ul" viewBox="0 0 40 20">
+                            <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                        </svg>
+                    </div>
+
+                    <div class="col-9 option-text ">Exibir solicitações de medicamentos</div>
+                </div>
+              
+            </button>
+
+
+            <button type="button" onclick="redirectTo('viewAttendances')" class="btn btn-secondary option-button">
+                <div class="row">
+                    <div class="col-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-journal-medical" viewBox="0 0 40 20">
+                            <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v.634l.549-.317a.5.5 0 1 1 .5.866L9 6l.549.317a.5.5 0 1 1-.5.866L8.5 6.866V7.5a.5.5 0 0 1-1 0v-.634l-.549.317a.5.5 0 1 1-.5-.866L7 6l-.549-.317a.5.5 0 0 1 .5-.866l.549.317V4.5A.5.5 0 0 1 8 4zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                            <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+                            <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+                        </svg>
+
+
+                    </div>
+
+                    <div class="col-9 option-text ">Emitir atestados</div>
+                </div>
+            </button>
+
+            <button type="button" onclick="redirectTo('viewAttendances')" class="btn btn-secondary option-button">
+                <div class="row">
+                    <div class="col-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-list-ul" viewBox="0 0 40 20">
+                            <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                        </svg>
+                    </div>
+
+                    <div class="col-9 option-text ">Exibir atestados emitidos</div>
+                </div>
+            </button>
+
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-5 alert alert-info" role="alert">
+                <div class="col-md-12">
+                    <h4>Sobre a Você</h4>
+                    <ul>
+                        <li>Pacientes triados: <b></b></li>
+                        <li>Atendimentos finalizados: <b></b></li>
+            
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-5 alert alert-info" role="alert">
+                <div class="col-md-12">
+
+                    <h4>Sobre a Unidade</h4>
+                    <ul>
+                        <li>Pacientes cadastrados: <b>{{ qty_total_patients }}</b></li>
+                        <li>Atendimentos finalizados: <b>{{ qty_total_finished_attendance }}</b></li>
+                        <li>Atestados emitidos: <b>{{ qty_total_sick_notes }}</b></li>
+                        <li>Exames solicitados: <b>{{ qty_total_exams_orders }}</b></li>
+                        <li>Medicamentos solicitados: <b>{{ qty_total_medications_orders }}</b></li>
+                        <li>Funcionários ativos: <b>{{ qty_total_employees }}</b></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
 
 {% bootstrap_javascript jquery='full' %}
 </body>

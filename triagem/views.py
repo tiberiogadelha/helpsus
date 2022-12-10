@@ -11,6 +11,7 @@ from django.views.generic import TemplateView
 from core.models import Attendance, Patient, Triagem, VitalData
 from datetime import date, datetime, timedelta
 
+from core.util import mount_default_dashboard_info
 from helpSUS.settings import TIME_ZONE
 from .forms import TriagemForm
 from .util import calculate_age, extract_vital_data, extract_triagem_data, allocate_patient
@@ -21,7 +22,9 @@ class IndexView(LoginRequiredMixin, TemplateView):
     login_url = '/'
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(**kwargs)
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context.update(mount_default_dashboard_info())
+        return context
 
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)

@@ -286,6 +286,16 @@ class ExamOrder(Base):
         verbose_name_plural = 'Solicitações de exames'
 
 
+class SickNote(Base):
+    id = models.CharField('Identificador', max_length=100, primary_key=True, default=uuid.uuid4)
+    requested_by = models.ForeignKey(Employee, on_delete=models.deletion.PROTECT, related_name='requisitante_atestado')
+    document = models.FileField('Atestado')
+
+    class Meta:
+        verbose_name = 'Atestado'
+        verbose_name_plural = 'Atestados'
+
+
 class Attendance(Base):
     enum_status = (
         ('aguardando', 'Aguardando atendimento'),
@@ -325,6 +335,10 @@ class Attendance(Base):
 
     exams_orders = models.ManyToManyField(
         ExamOrder, related_name='exames', blank=True
+    )
+
+    sick_notes = models.ManyToManyField(
+        SickNote, related_name='atestados', blank=True
     )
 
     def __str__(self):

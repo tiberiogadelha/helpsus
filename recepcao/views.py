@@ -52,7 +52,7 @@ class IndexReception(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(IndexReception, self).get_context_data(**kwargs)
-        context['att'] = '23232'
+        context['user_name'] = self.request.user.first_name
         return context
 
 
@@ -247,17 +247,15 @@ class EditPatientView(TemplateView):
            
             if (form.is_valid()):
                 patient = Patient.objects.filter(id=id).update(
-                    name = form.cleaned_data['name'],
-                    birth_date = form.cleaned_data['birth_date'],
-                    gender = form.cleaned_data['gender'],
-                    cns = form.cleaned_data['cns'],
-                    uf = form.cleaned_data['uf'],
-                    city = form.cleaned_data['city'],
-                    neighborhood = form.cleaned_data['neighborhood'],
-                    street = form.cleaned_data['street'],
-                    num = form.cleaned_data['num']
-
-
+                    name=form.cleaned_data['name'],
+                    birth_date=form.cleaned_data['birth_date'],
+                    gender=form.cleaned_data['gender'],
+                    cns=form.cleaned_data['cns'],
+                    uf=form.cleaned_data['uf'],
+                    city=form.cleaned_data['city'],
+                    neighborhood=form.cleaned_data['neighborhood'],
+                    street=form.cleaned_data['street'],
+                    num=form.cleaned_data['num']
                 )
                 messages.success(request, 'Dados atualizados com sucesso!')
                 query = f'?patient_data={id}'

@@ -8,7 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% bootstrap_css %}
     <script src="{% static 'js/script.js' %}"></script>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark custom-navbar">
         <a class="navbar-brand" href="#">Recepção!</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Alterna navegação">
           <span class="navbar-toggler-icon"></span>
@@ -34,7 +36,7 @@
               <a class="nav-link" href="#" data-toggle="modal" style="float: right;" data-target="#aboutModal">Sobre</a>
             </li>
             <li class="nav-item" style="float: right;">
-              <a class="nav-link" style="float: right;" href="{% url 'index' %}">Sair</a>
+              <a class="nav-link getout-button" style="float: right;" href="{% url 'index' %}">Sair</a>
             </li>
           </ul>
         </div>

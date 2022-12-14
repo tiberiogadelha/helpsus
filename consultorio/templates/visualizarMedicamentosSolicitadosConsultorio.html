@@ -1,0 +1,115 @@
+{% extends 'baseConsultorio.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Medicações solicitadas</title>
+
+    <script src="{% static '/js/viewmedicacoesconsultorio.js' %}"></script>
+</head>
+<body onload="AutoRefresh();">
+    <div class='container'>
+            <br>
+            
+            <br>
+            {% bootstrap_messages %}
+            <br>
+       
+                <div class='container'>
+                    <form action="" method="get">
+                        <div class="input-group">
+                            <input type="date" name="filter" id="filter" class="form-control" placeholder="Pesquisar por data" aria-label="Pesquisar por data" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                              <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            
+               <a href="{% url 'updateAttendanceConsultorio' %}" id="attendanceUrl" style="visibility: hidden;"></a>
+               <br><br><br>
+
+        {% if orders.length != 0 %}
+      
+                <div class="container">
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Paciente</th>
+                            <th scope="col">Data de nascimento</th>
+                            <th scope="col">Criação da requisição</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Detalhes</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td scope="row">{{ order.attendance.patient.name }}</td>
+                                <th scope="row">{{ order.attendance.patient.birth_date}}</th>
+                                <td scope="row">{{order.created_at}}</td>
+                                <td scope="row">{{order.status}}</td>
+                                <td scope="row" onclick="updateModalDetails(getOrderDetails('{{order.order}}'))"> 
+                                    <a class="nav-link" href="#" data-toggle="modal" data-target="#aboutDetails">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 40 20">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                          </svg>
+                                    </a>
+                                </td>
+
+                            </tr>
+                            {% endfor %} 
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="container">
+                    <h3 style="text-align: center;">Nenhum atendimento pendente!</h3>
+                </div>
+            {% endif %}
+
+            <div class="modal fade" id="aboutDetails" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detalhes da requisição!</h5>
+                        
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                      <span id="orderDetailsModal">
+                        
+                      </span>
+        
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+             
+    </div>
+
+    <script>
+        function addInterval() {
+            //setInterval(document.location.reload(true), 600000000);
+        }
+        function redirect(id, ficha) {
+            const url = document.getElementById('attendanceUrl').href;
+            const query = `?id=${id}&ficha=${ficha}`;
+            document.location.reload(true);
+            window.open(url + query);
+        }
+
+        function getOrderDetails(order) {
+            return order;
+        }
+    </script>
+
+
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

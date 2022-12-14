@@ -6,6 +6,7 @@ from django.db import transaction
 from django.http import request
 from django.contrib import messages
 
+from consultorio.serializers import MedicationOrderSerializer
 from consultorio.services import getAllPendingAttendances
 from core.models import Attendance, AttendanceQueue, Patient, MedicationOrder
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -151,6 +152,47 @@ class RequireMedView(LoginRequiredMixin, TemplateView):
             messages.error(request, e.__str__())
 
         context['attendances'] = getAllPendingAttendances()
+        return context
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        attendance_id = request.POST['attendance_id']
+        attendance = Attendance.objects.filter(id=attendance_id).first()
+
+        if attendance is None:
+            messages.error(request, 'Atendimento não encontrado')
+            return super().get(request, *args, **kwargs)
+
+        order = MedicationOrder(
+            order=request.POST['reqMed'],
+            requested_by=request.user
+        )
+
+        order.save()
+
+        attendance.medication_orders.add(order)
+
+        messages.success(request, 'Medicação solicitada com sucesso!')
+        return super().get(request, *args, **kwargs)
+
+
+class RequireMedListView(LoginRequiredMixin, TemplateView):
+    template_name = 'visualizarMedicamentosSolicitadosConsultorio.html'
+    login_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(RequireMedListView, self).get_context_data(**kwargs)
+
+        user = self.request.user
+
+        medications_orders = MedicationOrder.objects.filter(
+            requested_by=user.id
+        ).order_by('-created_at')
+
+        context['orders'] = MedicationOrderSerializer(medications_orders, many=True).data
         return context
 
     def get(self, request, *args, **kwargs):

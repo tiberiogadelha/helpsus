@@ -4,7 +4,6 @@
 {% block content %}
     <title>Consultório!</title>
     <link rel="stylesheet" href="{% static '/css/style.css' %}">
-    <script src="{% static '/js/baseconsultorio.js' %}"></script>
 </head>
 <body>
     <div class='body-content'>
@@ -35,7 +34,7 @@
 
 
         <div class="options-div">
-            <button type="button" onclick="redirectTo('createPatient')" class="btn btn-secondary option-button">
+            <button type="button" onclick="redirectTo('receptPatient')" class="btn btn-secondary option-button">
                 <div class="row">
                     <div class="col-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-clipboard-pulse" viewBox="0 0 40 20">
@@ -65,7 +64,7 @@
               
             </button>
 
-            <button type="button" onclick="redirectTo('editPatient')" class="btn btn-secondary option-button">
+            <button type="button" onclick="redirectTo('createExamOrder')" class="btn btn-secondary option-button">
                 <div class="row">
                     <div class="col-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-heart-pulse" viewBox="0 0 40 20">
@@ -98,7 +97,7 @@
         </div>
 
         <div class="options-div">
-            <button type="button" onclick="redirectTo('newAttendance')" class="btn btn-secondary option-button">
+            <button type="button" onclick="redirectTo('createPillOrder')" class="btn btn-secondary option-button">
                 <div class="row">
                     <div class="col-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-capsule" viewBox="0 0 40 20">

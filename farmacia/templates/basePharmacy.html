@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% bootstrap_css %}
+    <link rel="stylesheet" href="{% static '/css/styletriagem.css' %}">
     <script src="{% static 'js/script.js' %}"></script>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">Farmácia!</a>
@@ -21,9 +22,11 @@
             <li class="nav-item">
               <a class="nav-link" href="{% url 'newPatient'%}">Requisições pendentes</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'editPatient'%}">Requisições finalizadas</a>
-            </li>
+{#            <li class="nav-item">#}
+{#              <a class="nav-link" href="{% url 'updateMedicationOrder'%}">Requisições finalizadas</a>#}
+{#            </li><li class="nav-item">#}
+{#              <a class="nav-link" href="{% url 'updateMedicationOrder'%}">Requisições finalizadas</a>#}
+{#            </li>#}
             <li class="nav-item">
               <a class="nav-link" href="{% url 'newAttendance' %}">Novo atendimento</a>
             </li>

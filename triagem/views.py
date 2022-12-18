@@ -48,10 +48,15 @@ class GetAttendancesView(LoginRequiredMixin, TemplateView):
                 date2 = datetime(int(date[0]), int(date[1]), int(date[2]), 23, 59, 59)
                 date2 = pytz.timezone(TIME_ZONE).localize(date2)
 
-                attendances = attendances.objects.filter(
+                attendances = attendances.filter(
                     created_at__gte=date1,
                     created_at__lte=date2
-                ).order_by('created_at')
+                )
+
+            if self.request.GET.get('patient'):
+                attendances = attendances.filter(
+                    patient__name__icontains=self.request.GET.get('patient')
+                )
 
             context['attendances'] = attendances.order_by('created_at')
 
@@ -133,11 +138,14 @@ class UpdateAttendanceView(LoginRequiredMixin, TemplateView):
                 triagem.responsible = request.user
                 triagem.vital_data = created_vital
                 triagem.save()
+                attendance.triage_reference = triagem
+                attendance.save()
                 
                 allocate_patient(attendance)
                 messages.success(request, 'Triagem do paciente finalizada!')
                 
                 return redirect('getAttendancesTriagem')
+
             transaction.set_rollback(True)
             id = request.POST.id
             query = f'?id={id}'

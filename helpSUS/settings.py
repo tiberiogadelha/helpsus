@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'triagem',
     'consultorio',
     'farmacia',
-    'laboratorio'
+    'laboratorio',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [

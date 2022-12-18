@@ -1,4 +1,8 @@
-from core.models import AttendanceQueue, Triagem, VitalData
+from datetime import datetime
+
+from dateutil.relativedelta import relativedelta
+
+from core.models import AttendanceQueue, Triagem, VitalData, Attendance
 import json
 
 from recepcao.util import Util
@@ -6,25 +10,21 @@ from triagem.serializers import AttendanceSerializer
 
 
 def calculate_age(birth_date):
-    diff_in_days = Util.agora() - birth_date
-    DAYS_IN_YEAR = 365.25
-    age = diff_in_days.days/DAYS_IN_YEAR
-
-    return int(age)
+    return int(relativedelta(datetime.now(), birth_date).years)
 
 
 def insert_attendance(new_attendance, queue):
-    print(new_attendance)
+
 
     index = 0
     inserted = False
     serialized = AttendanceSerializer(new_attendance).data
     actual_queue = queue
-    print(len(actual_queue))
 
     while not inserted and index < len(actual_queue):
         attendance = actual_queue[index]
-        triagem = Triagem.objects.get(attendance_id=attendance['id'])
+        attendance = Attendance.objects.get(pk=attendance['id'])
+        triagem = attendance
 
         if int(new_attendance.priority) > int(triagem.priority):
             WAITING_LIMIT = 0 if triagem.priority == 2 else (1 if (triagem.priority == 1) else 3)
@@ -44,9 +44,7 @@ def insert_attendance(new_attendance, queue):
 def allocate_patient(attendance):
     try:
         attendance_queue = AttendanceQueue.objects.select_for_update().first()
-        print(attendance_queue)
         queue = json.loads(attendance_queue.attendances)
-        print(queue)
         new_queue = insert_attendance(attendance, queue)
         attendance_queue.attendances = new_queue
         attendance_queue.save()

@@ -1,4 +1,5 @@
 function redirectTo(url) {
+    console.log(url);
     switch (url) {
         case 'receptPatient':
             window.location.href = '/consultorio/visualizar-pacientes-pendentes';
@@ -12,6 +13,9 @@ function redirectTo(url) {
             return;
         case 'createSickNote':
             window.location.href = '/consultorio/emitir-atestado';
+            return;
+        case 'viewMedOrder':
+            window.location.href = '/consultorio/visualizar-medicamentos-solicitados'
             return;
         default:
             window.location.href = '/consultorio/';

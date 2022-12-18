@@ -1,0 +1,146 @@
+{% extends 'baseConsultorio.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Historico paciente</title>
+
+    <script src="{% static '/js/viewmedicacoesconsultorio.js' %}"></script>
+    <link rel="stylesheet" href="{% static '/css/stylehistoricopaciente.css' %}">
+</head>
+<body>
+    <div class='body-content'>
+            
+            <br>
+            {% bootstrap_messages %}
+            <br>
+     
+            {% if patient %}
+                <div class="row">
+                    <div class="col-7 input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Nome</span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{{patient.name}}" disabled>
+                    </div>
+                    <div class="col-3 input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Idade</span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" disabled value="{{patient.age}} anos">
+                    </div>
+                    <div class="col-2 input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Sexo</span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" disabled value="{{patient.gender}}">
+                    </div>
+                </div>
+            
+            {% endif %}
+              
+            <br>
+
+        {% if attendances.length != 0 %}
+            <div id="accordion" style="padding: 0 16px;">
+                {% for attendance in attendances %}
+                    <div class="card">
+                        <div class="card-header" id="heading{{attendance.num}}" style="display: flex; cursor: pointer;" data-toggle="collapse" data-target="#collapse{{attendance.num}}" aria-expanded="false" aria-controls="collapse{{attendance.num}}">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse{{attendance.num}}" aria-expanded="false" aria-controls="collapse{{attendance.num}}">
+                                Attendimento Nº {{attendance.num}} - {{attendance.created_at}}
+                                </button>
+                            </h5>
+                            
+                            <div style="position: absolute; right: 16px; color: #007BFF; cursor: pointer;">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse{{attendance.num}}" aria-expanded="false" aria-controls="collapse{{attendance.num}}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                                    </svg>
+                                </button>
+                                
+                            </div>
+                        </div>
+                        <div id="collapse{{attendance.num}}" class="collapse" aria-labelledby="heading{{attendance.num}}" data-parent="#accordion">
+                        <div class="card-body">
+                            <div>
+                                {% if attendance.triage_reference %}
+                                    <h4>Dados vitais</h4>
+                                    <div class="row" style="padding: 0">
+                                        <div class="col-3 input-group mb-3">
+                                            <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">Temperatura</span>
+                                            </div>
+                                            <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{{attendance.triage_reference.vital_data.temperature}} °C" disabled>
+                                        </div>
+                                        <div class="col-3 input-group mb-3">
+                                            <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">Pressão</span>
+                                            </div>
+                                            <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" disabled value="{{attendance.triage_reference.vital_data.pas}}/{{attendance.triage_reference.vital_data.pad}}">
+                                        </div>
+                                        <div class="col-3 input-group mb-3">
+                                            <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">Saturação</span>
+                                            </div>
+                                            <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" disabled value="{{attendance.triage_reference.vital_data.saturation}}%">
+                                        </div>
+
+                                        <div class="col-3 input-group mb-3">
+                                            <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">BPM: </span>
+                                            </div>
+                                            <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" disabled value="{{attendance.triage_reference.vital_data.heart_beats}}">
+                                        </div>
+                                    </div>
+
+                                    <h4>Detalhes da triagem</h4>
+                                    <textarea class="form-control" id="detailsTriagem" name="detailsTriagem" rows="10" cols="40" disabled>
+                                        {{attendance.triage_reference.description}}
+                                    </textarea>
+                                {% endif %}
+
+                                {% if attendance.medication_orders %}
+                                    <h4>Medicações solicitadas</h4>
+                            
+                            
+                                    {% for med in attendance.medication_orders %}
+                                        <textarea class="form-control" style="margin-bottom: 8px;" id="detailsMed" name="detailsMed" rows="6" cols="40" disabled>
+                                            {{med.order}}
+                                        </textarea>
+                                    {% endfor %}
+                                    
+                                {% endif %}
+
+                                {% if attendance.exam_orders %}
+                                    <h4>Exames solicitados</h4>
+                            
+                                    {% for order in attendance.exam_orders %}
+                                        <textarea class="form-control" id="detailsExam" name="detailsExam" rows="6" cols="40" disabled>
+                                            {{order.order}}
+                                        </textarea>
+                                    {% endfor %}
+                                    
+                                {% endif %}
+
+                                <div class="row" style="margin-top: 16px; margin-bottom: 16px; padding: 0;">
+                                    <h4 class="col">Houve emissão de atestado?</h4>
+                                    <h6 class="col" style="text-align: left; align-items: center; display: flex;"> {{attendance.had_sick_note}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="container">
+                <h3 style="text-align: center;">Nenhum atendimento!</h3>
+            </div>
+        {% endif %}
+    </div>
+
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

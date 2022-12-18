@@ -5,8 +5,10 @@ import pytz
 from django.db import transaction
 from django.http import request
 from django.contrib import messages
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
-from consultorio.serializers import MedicationOrderSerializer
+from consultorio.serializers import MedicationOrderSerializer, AttendanceHistorySerializer, PatientBasicSerializer
 from consultorio.services import getAllPendingAttendances
 from core.models import Attendance, AttendanceQueue, Patient, MedicationOrder
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -198,25 +200,29 @@ class RequireMedListView(LoginRequiredMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
-    @transaction.atomic
-    def post(self, request, *args, **kwargs):
-        attendance_id = request.POST['attendance_id']
-        attendance = Attendance.objects.filter(id=attendance_id).first()
 
-        if attendance is None:
-            messages.error(request, 'Atendimento não encontrado')
-            return super().get(request, *args, **kwargs)
+class PatientHistoryView(LoginRequiredMixin, TemplateView):
+    template_name = 'visualizarHistoricoPaciente.html'
+    login_url = '/'
 
-        order = MedicationOrder(
-            order=request.POST['reqMed'],
-            requested_by=request.user
-        )
+    def get_context_data(self, **kwargs):
+        context = super(PatientHistoryView, self).get_context_data(**kwargs)
+        patient_pk = self.request.GET.get('patient')
+        try:
+            patient = Patient.objects.get(pk=patient_pk)
+        except:
+            messages.error(self.request, "Paciente não encontrado!")
+            return
 
-        order.save()
-        messages.success(request, 'Medicação solicitada com sucesso!')
+        attendances = Attendance.objects.filter(patient=patient.pk).order_by('-created_at')
+
+        context['attendances'] = AttendanceHistorySerializer(attendances, many=True).data
+        context['patient'] = PatientBasicSerializer(patient).data
+
+        return context
+
+    def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
-
-
 
 
 class IssueSickNoteView(LoginRequiredMixin, TemplateView):
@@ -237,4 +243,17 @@ class IssueSickNoteView(LoginRequiredMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
+
+@api_view(['GET'])
+def get_med_order_details(_, order_id):
+    try:
+        med_order = MedicationOrder.objects.get(pk=order_id)
+
+        data = {
+            'order': med_order.order
+        }
+
+        return Response(data, status=200)
+    except:
+        return Response(data={}, status=404)
 

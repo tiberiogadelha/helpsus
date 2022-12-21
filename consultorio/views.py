@@ -1,7 +1,10 @@
 import json
+import uuid
 from datetime import datetime
 
 import pytz
+from dateutil.relativedelta import relativedelta
+from django.core.files.base import ContentFile
 from django.db import transaction
 from django.http import request
 from django.contrib import messages
@@ -10,7 +13,8 @@ from rest_framework.response import Response
 
 from consultorio.serializers import MedicationOrderSerializer, AttendanceHistorySerializer, PatientBasicSerializer
 from consultorio.services import getAllPendingAttendances
-from core.models import Attendance, AttendanceQueue, Patient, MedicationOrder
+from consultorio.util import mount_sick_note_pdf
+from core.models import Attendance, AttendanceQueue, Patient, MedicationOrder, SickNote
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views.generic.base import TemplateView
@@ -231,17 +235,67 @@ class IssueSickNoteView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(IssueSickNoteView, self).get_context_data(**kwargs)
+        attendance_id = self.request.GET.get('attendance_id')
 
         attendances = Attendance.objects.filter(
-            status='consultorio',
+            status='triagem',
         ).order_by('-moment_consultorio')
 
-        context['atendimentos'] = attendances
+        context['attendances'] = attendances
+
+        if attendance_id is not None:
+            try:
+                attendance = Attendance.objects.get(pk=attendance_id, status='triagem')
+                context['attendance'] = attendance
+                context['patient'] = attendance.patient
+            except Attendance.DoesNotExist:
+                pass
 
         return context
 
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        data = request.POST
+        user = request.user
+        attendance = data['attendance_id']
+
+        try:
+            attendance = Attendance.objects.select_for_update(skip_locked=True).get(pk=attendance, status='triagem')
+        except:
+            messages.error(request, "Atendimento não encontrado!")
+            return
+
+        if attendance.sick_notes.count() > 1:
+            messages.error(request, "Atendimento já possui atestado emitido!")
+            return
+
+        days = int(data['days'])
+        if days < 1:
+            messages.error(request, "Quantidade de dias inválida!")
+            return
+
+        sick_note = SickNote(
+            quantity_days=int(days),
+            requested_by=user
+        )
+        sick_note.save()
+
+        attendance_date = attendance.created_at.strftime('%d/%m/%Y às %H:%M')
+        util = (attendance.created_at + relativedelta(days=days-1)).strftime('%d/%m/%Y às %H:%M')
+        pdf_data = mount_sick_note_pdf(
+            sick_note.id, attendance, user, days, data['days_text'], data['cid'], attendance_date, util
+        )
+        sick_note.document.save(str(uuid.uuid4()) + '.pdf', ContentFile(pdf_data))
+        sick_note.save()
+
+        attendance.sick_notes.add(sick_note)
+
+        messages.success(request, 'Atestado emitido com sucesso!')
+        return redirect('viewAttendances')
+
 
 
 @api_view(['GET'])

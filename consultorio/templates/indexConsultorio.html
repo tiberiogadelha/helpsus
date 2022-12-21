@@ -3,6 +3,7 @@
 {% load static %}
 {% block content %}
     <title>Consultório!</title>
+    <script src="{% static '/js/baseconsultorio.js' %}"></script>
     <link rel="stylesheet" href="{% static '/css/style.css' %}">
 </head>
 <body>
@@ -110,7 +111,7 @@
               
             </button>
 
-            <button type="button" onclick="redirectTo('newAttendance')" class="btn btn-secondary option-button">
+            <button type="button" onclick="redirectTo('viewMedOrder')" class="btn btn-secondary option-button">
                 <div class="row">
                     <div class="col-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-list-ul" viewBox="0 0 40 20">

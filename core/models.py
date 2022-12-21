@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 
 import jsonfield
+from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.db.models.fields.related import ForeignKey
 from django.forms import JSONField
@@ -289,7 +290,11 @@ class ExamOrder(Base):
 class SickNote(Base):
     id = models.CharField('Identificador', max_length=100, primary_key=True, default=uuid.uuid4)
     requested_by = models.ForeignKey(Employee, on_delete=models.deletion.PROTECT, related_name='requisitante_atestado')
-    document = models.FileField('Atestado')
+    document = models.FileField('Atestado', null=True, blank=True)
+    quantity_days = models.IntegerField()
+
+    def get_expiration(self):
+        return self.created_at + relativedelta(days=self.quantity_days-1)
 
     class Meta:
         verbose_name = 'Atestado'

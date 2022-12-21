@@ -7,10 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% bootstrap_css %}
-
-    <script src="{% static '/js/baseconsultorio.js' %}"></script>
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
     <link rel="stylesheet" href="{% static '/css/styletriagem.css' %}">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark custom-navbar">
         <a class="navbar-brand" href="#">Consultório!</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Alterna navegação">
           <span class="navbar-toggler-icon"></span>
@@ -20,23 +20,12 @@
             <li class="nav-item active">
               <a class="nav-link" href="{% url 'indexClinic'%}">Home <span class="sr-only">(Página atual)</span></a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'visualizarPacientesPendentesConsultorio' %}">Recepcionar paciente</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'solicitarExameConsultorio' %}">Solicitar exames</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'solicitarMedicamentoConsultorio' %}">Solicitar medicação</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'emitirAtestado' %}">Emitir atestado</a>
-            </li>
+            
             <li class="nav-item">
               <a class="nav-link" href="#" data-toggle="modal" data-target="#aboutModal">Sobre</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'logout' %}">Sair</a>
+              <a class="nav-link getout-button" href="{% url 'logout' %}">Sair</a>
             </li>
           </ul>
         </div>

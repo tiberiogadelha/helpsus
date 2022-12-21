@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import Triagem, User, Role, Employee, Patient, Attendance, VitalData, AttendanceQueue, FichaHandler, \
-    MedicationOrder
+    MedicationOrder, SickNote
 
 
 @admin.register(Employee)
@@ -45,5 +45,9 @@ class AttendanceQueueAdmin(admin.ModelAdmin):
 
 
 @admin.register(MedicationOrder)
-class MedicationOrder(admin.ModelAdmin):
+class MedicationOrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'status']
+
+@admin.register(SickNote)
+class SickNoteAdmin(admin.ModelAdmin):
+    list_display = ['id', 'document', 'quantity_days']

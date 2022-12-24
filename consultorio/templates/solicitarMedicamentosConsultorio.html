@@ -7,33 +7,36 @@
 
 </head>
 <body>
-    <div class='container'>
-        <center>
-            <br>
-            {% bootstrap_messages %}
-            <br>
-            <form action="{% url 'solicitarMedicamentoConsultorio' %}" method="get">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="patient_span">Nome/CNS do paciente: </span>
-                    </div>
-                    <input list="attendances" type="text" id="attendance_data" name="attendance_data" class="form-control" aria-label="Default" aria-describedby="attendance_data" onchange="this.form.submit()">
-                    <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
+    <div class='body-content'>
+        
+        <br>
+        {% bootstrap_messages %}
+        <br>
+        <form action="{% url 'solicitarMedicamentoConsultorio' %}" method="get">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="patient_span">Nome/CNS do paciente: </span>
                 </div>
+                <input list="attendances" type="text" id="attendance_data" name="attendance_data" class="form-control" aria-label="Default" aria-describedby="attendance_data" onchange="this.form.submit()">
+                <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
+            </div>
 
-                <datalist id="attendances">
-                    {% for attendance in attendances %}
-                        <option value="{{ attendance.id }}"> {{ attendance.patient }} </option>
-                    {% endfor %}   
-                </datalist>
-            </form>
+            <datalist id="attendances">
+                {% for attendance in attendances %}
+                    <option value="{{ attendance.id }}"> {{ attendance.patient }} </option>
+                {% endfor %}   
+            </datalist>
+        </form>
+
+        {% if attendanceData %}
+
             <form action="{% url 'solicitarMedicamentoConsultorio' %}" method="post" class="form" autocomplete="on">
                 {% csrf_token %}
                 
-                <div id="patient_values">
-               
+                <div id="patient_values" class="div-box" style="margin-top: 32px;">
+                    <h4 class="div-box-title" style="margin-bottom: 0px !important;">Detalhes do paciente</h4>
                         <input type="number" name="attendance_id" value="{{ attendanceData.id }}" style="visibility: hidden;">
-                        <div class="row">
+                        <div class="row" style="padding: 0;">
                             <div class="col-8 form-floating details-field">
                                 <label for="namePatient">Nome</label>
                                 <input type="text" class="form-control" id="namePatient" value="{{ attendanceData.patient.name }}" readonly>
@@ -45,7 +48,7 @@
                             </div>
                         </div>
 
-                        <div class="row" style="margin-top:  24px">
+                        <div class="row" style="margin-top:  24px; padding: 0;">
                             <div class="col-8 details-field">
                                 <label for="cnsPatient">CNS</label>
                                 <input type="text" class="form-control" id="cnsPatient" value="{{ attendanceData.patient.cns }}" readonly>
@@ -62,43 +65,44 @@
                             <textarea class="form-control" id="reqMed" name="reqMed" rows="4" cols="40"> </textarea>
                         </div>
 
-                        <div class="form-floating" style="margin-top: 24px">
-                            <input class="form-check-input" type="checkbox" id="confirm" name="confirm" onclick="showButton();updateHour();">
-                            <label class="form-check-label" for="confirm">Dados confirmados?</label>
+                
+                        <div class="row mt-4" style="justify-content: center;">
+                            {% buttons %}
+                                <button type="menu" class="btn btn-secondary"><a href="{% url 'indexClinic' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                                <button type="menu" id="confirmButton" class="btn btn-success" style="color: white;" onclick="showButton();updateHour();">Confirmar</button>
+                                <button type="submit" class="btn btn-primary" id='btnNewMedRequest' disabled>Solicitar medicação</button>
+                            {% endbuttons %}
                         </div>
-            
                 </div>
                     <br>
                     <br>
-                {% buttons %}
-                    <button type="menu" class="btn btn-secondary"><a href="{% url 'indexClinic' %}" style="color: white; text-decoration:none">Voltar</a></button>
-                    <button type="submit" class="btn btn-success" id='btnNewMedRequest' disabled>Solicitar medicação</button>
-                {% endbuttons %}
                 
-      
+        
             </form>      
+        {% endif %}
 
-        </center>
              
     </div>
 
     <script>
 
         function showButton() {
-            const checked = document.getElementById('confirm').checked;
-            console.log(checked);
-            if (!checked)
-                document.getElementById('btnNewMedRequest').setAttribute('disabled', 'disabled')
-            else
-                document.getElementById('btnNewMedRequest').removeAttribute('disabled')
+            
+            
+            document.getElementById('btnNewMedRequest').removeAttribute('disabled');
+            document.getElementById('confirmButton').setAttribute('disabled', 'disabled')
         }
 
         function updateHour() {
             const now = Date.now();
             const date = new Date(now);
             const div = document.getElementById('attendanceHour');
+
+            const dateString = ("0" + date.getDate()).slice(-2) + "/" + ("0"+(date.getMonth()+1)).slice(-2) + "/" +
+                date.getFullYear() + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2);
+            
             if (div) {
-                div.value = date.toLocaleDateString() + ' às ' + date.toLocaleTimeString().slice(0,5);
+                div.value = dateString;
             }
         }      
     </script>  

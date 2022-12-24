@@ -103,8 +103,6 @@ class UpdateAttendanceMedView(LoginRequiredMixin, TemplateView):
         # context['form'] = form
         return context
 
-
-
 class ViewAttendanceDetails(LoginRequiredMixin, TemplateView):
     template_name = 'analisarAtendimentoConsultorio.html'
     login_url = '/'
@@ -113,7 +111,7 @@ class ViewAttendanceDetails(LoginRequiredMixin, TemplateView):
         context = super(ViewAttendanceDetails, self).get_context_data(**kwargs)
         try:
             id = self.request.GET.get('id')
-            attendance = Attendance.objects.get(pk=id)
+            attendance = Attendance.objects.get(pk=id, status='triagem')
 
             context['patient'] = PatientBasicSerializer(attendance.patient).data
             context['attendance'] = attendance
@@ -123,6 +121,50 @@ class ViewAttendanceDetails(LoginRequiredMixin, TemplateView):
             return context
 
         return context
+
+
+class ViewFinishAttendance(LoginRequiredMixin, TemplateView):
+    template_name = 'finalizarAtendimentoConsultorio.html'
+
+    login_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(ViewFinishAttendance, self).get_context_data(**kwargs)
+        try:
+            if self.request.method == 'GET':
+                id = self.request.GET.get('id')
+            else:
+                id = self.request.POST['attendance_id']
+
+            attendance = Attendance.objects.get(pk=id, status='triagem')
+
+            context['patient'] = PatientBasicSerializer(attendance.patient).data
+            context['attendanceData'] = attendance
+            context['triagem'] = TriagemSerializer(attendance.triage_reference).data
+        except Attendance.DoesNotExist:
+            if self.request.method == 'GET':
+                msg = 'Atendimento já finalizado ou não encontrado'
+                messages.error(self.request, msg)
+
+        return context
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        id = self.request.POST['attendance_id']
+        user = request.user
+        try:
+            attendance = Attendance.objects.select_for_update(skip_locked=True).get(pk=id, status='triagem')
+        except Attendance.DoesNotExist:
+            messages.error(self.request, 'Atedimento não encontrado ou já finalizado!')
+            return
+
+        data = self.request.POST['data']
+
+        attendance.finish_attendance(data, user)
+        messages.success(self.request, 'Atedimento finalizado com sucesso!')
+        return super().get(request, *args, **kwargs)
+
+
 
 
 class RequireExamView(LoginRequiredMixin, TemplateView):

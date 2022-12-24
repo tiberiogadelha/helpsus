@@ -320,9 +320,10 @@ class Attendance(Base):
     num = models.IntegerField('Número atendimento', default=0, blank=False, null=False)
     status = models.CharField('Status', default='aguardando', choices=enum_status, max_length=30)
     moment_triagem = models.DateTimeField('Momento da triagem', blank=True, null=True)
-    sign_attendance = models.CharField('Assinatura atendimento', max_length=400, default='')
+    sign_attendance = models.TextField('Assinatura atendimento', max_length=900, default='')
     moment_consultorio = models.DateTimeField('Momento da consulta', blank=True, null=True)
     moment_encerramento = models.DateTimeField('Momento do encerramento', blank=True, null=True)
+    attended_by = models.ForeignKey(Employee, null=True, blank=True, on_delete=models.PROTECT, related_name='MedicoResponsavel')
     creation_hour = models.TimeField('Hora da criação', blank=False, default=datetime.time(datetime.now()))
     priority = models.IntegerField('Prioridade', default=0)
 
@@ -359,6 +360,14 @@ class Attendance(Base):
             return False
         else:
             raise('invalid comparation')
+
+    def finish_attendance(self, sign_attendance, attended_by):
+        self.moment_encerramento = datetime.now()
+        self.sign_attendance = sign_attendance
+        self.attended_by = attended_by
+        self.status = 'encerrado'
+        self.save()
+
 
     class Meta:
         verbose_name = 'Atendimento'

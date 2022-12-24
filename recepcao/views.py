@@ -51,6 +51,7 @@ class IndexReception(TemplateView):
     template_name = 'indexReception.html'
 
     def get_context_data(self, **kwargs):
+
         context = super(IndexReception, self).get_context_data(**kwargs)
         context['user_name'] = self.request.user.first_name
         return context

@@ -19,6 +19,10 @@ function redirectAttendance(url, param) {
         case 'viewHistory':
             window.open(`/consultorio/visualizar-historico-paciente?patient=${param}`);
             return;
+
+        case 'finishAttendance':
+            window.open(`/consultorio/finalizar-atendimento?id=${param}`);
+            return;
         default:
             return;
         

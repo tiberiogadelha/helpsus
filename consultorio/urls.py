@@ -2,7 +2,8 @@ from django.conf.urls import url
 from django.urls import path, re_path
 
 from .views import RequireExamView, IndexConsultorioView, RequireMedView, IssueSickNoteView, PendingPacientsMedView, \
-    UpdateAttendanceMedView, RequireMedListView, get_med_order_details, PatientHistoryView, ViewAttendanceDetails
+    UpdateAttendanceMedView, RequireMedListView, get_med_order_details, PatientHistoryView, ViewAttendanceDetails, \
+    ViewFinishAttendance
 
 urlpatterns = [
     path('solicitar-exame', RequireExamView.as_view(), name='solicitarExameConsultorio'),
@@ -14,5 +15,6 @@ urlpatterns = [
     path('visualizar-medicamentos-solicitados', RequireMedListView.as_view(), name='visualizarMedicamentosSolicitados'),
     re_path('get-med-order/(?P<order_id>.+)', get_med_order_details),
     path('visualizar-historico-paciente', PatientHistoryView.as_view(), name='visualizarHistoricoPaciente'),
-    path('atender-paciente/', ViewAttendanceDetails.as_view(), name='atenderPacienteConsultorio')
+    path('atender-paciente/', ViewAttendanceDetails.as_view(), name='atenderPacienteConsultorio'),
+    path('finalizar-atendimento', ViewFinishAttendance.as_view(), name='finalizarAtendimento')
 ]

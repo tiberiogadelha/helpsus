@@ -6,12 +6,14 @@ import pytz
 from dateutil.relativedelta import relativedelta
 from django.core.files.base import ContentFile
 from django.db import transaction
+from django.db.models import Count
 from django.http import request
 from django.contrib import messages
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from consultorio.serializers import MedicationOrderSerializer, AttendanceHistorySerializer, PatientBasicSerializer
+from consultorio.serializers import MedicationOrderSerializer, AttendanceHistorySerializer, PatientBasicSerializer, \
+    TriagemSerializer
 from consultorio.services import getAllPendingAttendances
 from consultorio.util import mount_sick_note_pdf
 from core.models import Attendance, AttendanceQueue, Patient, MedicationOrder, SickNote
@@ -99,6 +101,27 @@ class UpdateAttendanceMedView(LoginRequiredMixin, TemplateView):
         #     context['form'] = form
         #     return context
         # context['form'] = form
+        return context
+
+
+
+class ViewAttendanceDetails(LoginRequiredMixin, TemplateView):
+    template_name = 'analisarAtendimentoConsultorio.html'
+    login_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(ViewAttendanceDetails, self).get_context_data(**kwargs)
+        try:
+            id = self.request.GET.get('id')
+            attendance = Attendance.objects.get(pk=id)
+
+            context['patient'] = PatientBasicSerializer(attendance.patient).data
+            context['attendance'] = attendance
+            context['triagem'] = TriagemSerializer(attendance.triage_reference).data
+        except Attendance.DoesNotExist:
+            messages.error(self.request, 'Atendimento já realizado ou não encontrado.')
+            return context
+
         return context
 
 
@@ -237,8 +260,9 @@ class IssueSickNoteView(LoginRequiredMixin, TemplateView):
         context = super(IssueSickNoteView, self).get_context_data(**kwargs)
         attendance_id = self.request.GET.get('attendance_id')
 
-        attendances = Attendance.objects.filter(
+        attendances = Attendance.objects.alias(qty_notes=Count('sick_notes')).filter(
             status='triagem',
+            qty_notes=0
         ).order_by('-moment_consultorio')
 
         context['attendances'] = attendances

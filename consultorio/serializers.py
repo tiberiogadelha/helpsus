@@ -69,6 +69,15 @@ class VitalDataSerializer(serializers.ModelSerializer):
 
 class TriagemSerializer(serializers.ModelSerializer):
     vital_data = VitalDataSerializer(read_only=True)
+    priority = serializers.SerializerMethodField(read_only=True)
+
+    def get_priority(self, obj):
+        priority = str(obj.priority)
+        if priority == '0':
+            return 'Normal'
+        elif priority == '1':
+            return 'Moderada'
+        return 'Alta'
 
     class Meta:
         model = Triagem
@@ -104,4 +113,4 @@ class PatientBasicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
-        fields = ['name', 'gender', 'age']
+        fields = ['name', 'gender', 'age', 'cns', 'id']

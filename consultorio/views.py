@@ -220,7 +220,7 @@ class RequireMedView(LoginRequiredMixin, TemplateView):
                 context['attendanceData'] = attendance
 
         except Exception as e:
-            messages.error(request, e.__str__())
+            messages.error(self.request, e.__str__())
 
         context['attendances'] = getAllPendingAttendances()
         return context

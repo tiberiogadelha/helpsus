@@ -1,0 +1,65 @@
+{% extends 'baseConsultorio.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Cadastrar exame</title>
+    <link rel="stylesheet" href="{% static 'style/style.css'%}">
+
+</head>
+<body>
+    <div class='body-content'>
+        <br>
+        {% bootstrap_messages %}
+        <br>
+                
+        <div class="div-box">
+            <h4 class="div-box-title"> Exames cadastrados</h4>
+
+            <form action="{% url 'viewExames' %}" method="post" class="form">
+                {% csrf_token %}
+                <input type="text" id="examId" name="examId" style="display: none;">
+                <div class="row">
+                    {% for exam in exams %}
+                        <div class="col-3 mb-2" style="display: flex; align-items: center;">
+                            <div class="custom-control custom-switch">
+                                {% if exam.active %}
+                                    <input type="checkbox" class="custom-control-input" id="switch{{exam.id}}" checked onclick="handleExamClick('{{exam.id}}', this.form)">
+                                {% else %}
+                                    <input type="checkbox" class="custom-control-input" id="switch{{exam.id}}" onclick="handleExamClick('{{exam.id}}', this.form)">
+                                {% endif %}
+                                <label class="custom-control-label" for="switch{{exam.id}}"></label>
+                            </div>
+    
+                            <div>
+    
+                                <h4 style="font-size: 1rem !important; line-height: 1px; margin-top: 6px;">{{exam.label}}</h4>
+                            </div>
+    
+                        </div>
+                    {% endfor %} 
+    
+                </div>
+
+                <div style="display: flex; justify-content: center; margin-top: 32px;">
+
+                    {% buttons %}
+                        <button type="menu" class="btn btn-secondary"><a href="{% url 'indexClinic' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                        <button type="menu" id="confirmButton" class="btn btn-success" style="color: white;"><a href="{% url 'criarExame' %}" style="color: white; text-decoration:none">Cadastrar exames</a></button>
+                       
+                    {% endbuttons %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function handleExamClick(id, form) {
+            document.getElementById("examId").setAttribute('value', id);
+            form.submit();
+        }
+    </script>  
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

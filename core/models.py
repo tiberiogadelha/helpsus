@@ -267,6 +267,12 @@ class MedicationOrder(Base):
         verbose_name_plural = 'Solicitações de medicamento'
 
 
+class ExamInstance(Base):
+    label = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
+    active = models.BooleanField(default=True)
+
+
 class ExamOrder(Base):
     status_enum = (
         (0, 'Pendente'),
@@ -281,6 +287,7 @@ class ExamOrder(Base):
     order = models.TextField('Solicitação', max_length=5000, null=False, blank=False)
     was_released = models.BooleanField(default=False)
     status = models.IntegerField('Status', default=0, choices=status_enum)
+    exams = models.ManyToManyField(ExamInstance)
 
     class Meta:
         verbose_name = 'Solicitação de exame'
@@ -374,8 +381,4 @@ class Attendance(Base):
         verbose_name_plural = 'Atendimentos'
 
 
-class ExamInstance(Base):
-    label = models.CharField(max_length=100, unique=True)
-    description = models.TextField()
-    active = models.BooleanField(default=True)
 

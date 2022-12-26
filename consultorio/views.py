@@ -13,10 +13,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from consultorio.serializers import MedicationOrderSerializer, AttendanceHistorySerializer, PatientBasicSerializer, \
-    TriagemSerializer
+    TriagemSerializer, ExamOrderSerializer
 from consultorio.services import getAllPendingAttendances
 from consultorio.util import mount_sick_note_pdf
-from core.models import Attendance, AttendanceQueue, Patient, MedicationOrder, SickNote
+from core.models import Attendance, AttendanceQueue, Patient, MedicationOrder, SickNote, ExamInstance, ExamOrder
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views.generic.base import TemplateView
@@ -176,7 +176,7 @@ class RequireExamView(LoginRequiredMixin, TemplateView):
         try:
             if self.request.POST:
                 return
-            attendance_data = self.request.GET.get('attendance_data')
+            attendance_data = self.request.GET.get('attendance')
             if attendance_data and attendance_data != 'data':
                 attendance = Attendance.objects.filter(
                     id=attendance_data, status='triagem'
@@ -189,13 +189,52 @@ class RequireExamView(LoginRequiredMixin, TemplateView):
                 context['attendanceData'] = attendance
 
         except Exception as e:
-            messages.error(request, e.__str__())
+            messages.error(self.request, e.__str__())
 
         context['attendances'] = getAllPendingAttendances()
+        context['exams'] = ExamInstance.objects.filter(active=True).order_by('label')
+
         return context
 
-    def get(self, request, *args, **kwargs):
+    @transaction.atomic()
+    def post(self, request, *args, **kwargs):
+        attendance_id = request.POST['id']
+
+        try:
+            attendance = Attendance.objects.get(pk=attendance_id, status='triagem')
+        except:
+            messages.error(request, 'Atendimento não encontrado ou já finalizado')
+            return super().get(request, *args, **kwargs)
+
+        details = request.POST['details']
+        exams = json.loads(request.POST['examsItems'])
+        exams_instance = []
+
+        for exam in exams:
+            try:
+                exam_instance = ExamInstance.objects.get(pk=exam, active=True)
+                exams_instance.append(exam_instance)
+            except:
+                messages.error(request, 'Exame não encontrado ou está desabilitado')
+                return super().get(request, *args, **kwargs)
+
+        exam_order = ExamOrder(
+            requested_by=request.user,
+            order=details
+        )
+
+        exam_order.save()
+
+        for exam in exams_instance:
+            exam_order.exams.add(exam)
+
+        attendance.exams_orders.add(exam_order)
+
+        messages.success(request, 'Solicitação enviada com sucesso!')
         return super().get(request, *args, **kwargs)
+
+
+
 
 
 class RequireMedView(LoginRequiredMixin, TemplateView):
@@ -264,6 +303,26 @@ class RequireMedListView(LoginRequiredMixin, TemplateView):
         ).order_by('-created_at')
 
         context['orders'] = MedicationOrderSerializer(medications_orders, many=True).data
+        return context
+
+    def get(self, request, *args, **kwargs):
+
+        return super().get(request, *args, **kwargs)
+
+class RequireExamsListView(LoginRequiredMixin, TemplateView):
+    template_name = 'visualizarExamesSolicitadosConsultorio.html'
+    login_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(RequireExamsListView, self).get_context_data(**kwargs)
+
+        user = self.request.user
+
+        exams_orders = ExamOrder.objects.filter(
+            requested_by=user.id
+        ).order_by('-created_at')
+
+        context['orders'] = ExamOrderSerializer(exams_orders, many=True).data
         return context
 
     def get(self, request, *args, **kwargs):

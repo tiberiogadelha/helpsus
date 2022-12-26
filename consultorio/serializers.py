@@ -2,7 +2,7 @@ from datetime import datetime
 
 from rest_framework import serializers
 
-from core.models import MedicationOrder, Attendance, Triagem, VitalData, ExamOrder, Patient
+from core.models import MedicationOrder, Attendance, Triagem, VitalData, ExamOrder, Patient, ExamInstance
 from dateutil.relativedelta import relativedelta
 
 from triagem.util import calculate_age
@@ -107,10 +107,59 @@ class AttendanceHistorySerializer(serializers.ModelSerializer):
 
 class PatientBasicSerializer(serializers.ModelSerializer):
     age = serializers.SerializerMethodField(read_only=True)
+    birth_date = serializers.SerializerMethodField(read_only=True)
 
     def get_age(self, obj):
         return calculate_age(obj.birth_date)
 
+    def get_birth_date(self, obj):
+        return obj.birth_date.strftime('%d/%m/%Y')
+
     class Meta:
         model = Patient
-        fields = ['name', 'gender', 'age', 'cns', 'id']
+        fields = ['name', 'gender', 'age', 'cns', 'id', 'birth_date']
+
+
+class ExamInstanceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ExamInstance
+        fields = ['label', 'description']
+
+
+class ExamOrderSerializer(serializers.ModelSerializer):
+    attendance = serializers.SerializerMethodField(read_only=True)
+    patient = serializers.SerializerMethodField(read_only=True)
+    exams = serializers.SerializerMethodField(read_only=True)
+    status = serializers.SerializerMethodField(read_only=True)
+    created_at = serializers.SerializerMethodField(read_only=True)
+    order_details = serializers.SerializerMethodField(read_only=True)
+
+    def get_attendance(self, obj):
+        attendance = Attendance.objects.get(exams_orders=obj.pk)
+        return AttendanceHistorySerializer(attendance).data
+
+    def get_patient(self, obj):
+        attendance = Attendance.objects.get(exams_orders=obj.pk)
+        return PatientBasicSerializer(attendance.patient).data
+
+    def get_status(self, obj):
+        if str(obj.status) == '0':
+            return 'Pendente'
+        return 'Liberado'
+
+    def get_created_at(self, obj):
+        return obj.created_at.strftime('%d/%m/%Y às %H:%M')
+
+    def get_exams(self, obj):
+        return ExamInstanceSerializer(obj.exams, many=True).data
+
+    def get_order_details(self, obj):
+        order_details = ''
+        for exam in obj.exams:
+            order_details = order_details + f'{exam.label}, '
+        return order_details
+
+    class Meta:
+        model = ExamOrder
+        fields = ['id', 'created_at', 'attendance', 'patient', 'order', 'status', 'exams', 'order_details']

@@ -2,11 +2,16 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.shortcuts import render
-
-# Create your views here.
 from django.views.generic import TemplateView
 
-from core.models import ExamInstance
+from consultorio.serializers import ExamOrderSerializer
+from core.models import ExamInstance, ExamOrder, Attendance
+
+
+class IndexLaboratorio(LoginRequiredMixin, TemplateView):
+    template_name = 'indexLaboratorio.html'
+    login_url = '/'
+
 
 
 class CreateExamView(LoginRequiredMixin, TemplateView):
@@ -57,5 +62,56 @@ class HandleExamView(LoginRequiredMixin, TemplateView):
             return
 
         messages.success(request, 'Exame atualizado com sucesso!')
+        return super().get(request, *args, **kwargs)
+
+
+class PendingExamView(LoginRequiredMixin, TemplateView):
+    template_name = 'ordensExamesPendentes.html'
+    login_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(PendingExamView, self).get_context_data(**kwargs)
+
+        exams = ExamOrder.objects.filter(status='0').order_by('created_at')
+        context['exams'] = exams
+        return context
+
+
+class ConfirmExamView(LoginRequiredMixin, TemplateView):
+    template_name = 'updateExamOrder.html'
+    login_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(ConfirmExamView, self).get_context_data(**kwargs)
+
+        if self.request.method == 'GET':
+            id = self.request.GET.get('id')
+        else:
+            id = self.request.POST['id']
+
+        try:
+            exam = ExamOrder.objects.get(pk=id)
+            context['exam'] = ExamOrderSerializer(exam).data
+        except:
+            messages.error(self.request, 'Ordem não encontrada!')
+            return context
+
+        return context
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        exam_id = request.POST['id']
+
+        try:
+            exam = ExamOrder.objects.select_for_update(skip_locked=True).get(pk=exam_id, status=0)
+            exam.status = 1
+            exam.was_released = True
+            exam.released_by = request.user
+            exam.save()
+        except Exception:
+            messages.error(request, 'Ordem exame não encontrada ou já finalizada!')
+            return
+
+        messages.success(request, 'Ordem exame atualizada com sucesso!')
         return super().get(request, *args, **kwargs)
 

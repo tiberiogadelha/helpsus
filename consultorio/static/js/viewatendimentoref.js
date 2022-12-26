@@ -1,14 +1,10 @@
 function redirectAttendance(url, param) {
-    console.log(url);
-    console.log(param);
-   
     switch (url) {
         case 'receptPatient':
             window.location.href = '/consultorio/visualizar-pacientes-pendentes';
             return;
-            
         case 'createExamOrder':
-            window.location.href = '/consultorio/solicitar-exame';
+            window.open(`/consultorio/solicitar-exame?attendance=${param}`);
             return;
         case 'createPillOrder':
             window.open(`/consultorio/solicitar-medicamentos?attendance_data=${param}`);

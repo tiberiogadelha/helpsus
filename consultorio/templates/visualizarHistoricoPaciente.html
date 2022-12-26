@@ -64,7 +64,7 @@
                         <div class="card-body">
                             <div>
                                 {% if attendance.triage_reference %}
-                                    <h4>Dados vitais</h4>
+                                    <h4 class="div-box-title">Dados vitais</h4>
                                     <div class="row" style="padding: 0">
                                         <div class="col-3 input-group mb-3">
                                             <div class="input-group-prepend">
@@ -93,14 +93,14 @@
                                         </div>
                                     </div>
 
-                                    <h4>Detalhes da triagem</h4>
+                                    <h4 class="div-box-title">Detalhes da triagem</h4>
                                     <textarea class="form-control" id="detailsTriagem" name="detailsTriagem" rows="10" cols="40" disabled>
                                         {{attendance.triage_reference.description}}
                                     </textarea>
                                 {% endif %}
 
                                 {% if attendance.medication_orders %}
-                                    <h4>Medicações solicitadas</h4>
+                                    <h4 class="div-box-title">Medicações solicitadas</h4>
                             
                             
                                     {% for med in attendance.medication_orders %}

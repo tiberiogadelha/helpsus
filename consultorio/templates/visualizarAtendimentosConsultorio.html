@@ -9,62 +9,61 @@
             setTimeout("location.reload(true);", 15000);
         }
      </script>
+     <link rel="stylesheet" href="{% static '/css/style.css' %}">
 </head>
 <body onload="AutoRefresh();">
-    <div class='container'>
+    <div class='body-content'>
             <br>
             
             <br>
             {% bootstrap_messages %}
             <br>
        
-                <div class='container'>
-                    <form action="" method="get">
-                        <div class="input-group">
-                            <input type="date" name="filter" id="filter" class="form-control" placeholder="Pesquisar por data" aria-label="Pesquisar por data" aria-describedby="basic-addon2">
-                            <div class="input-group-append">
-                              <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
-                            </div>
-                        </div>
-                    </form>
+        
+            <form action="" method="get">
+                <div class="input-group">
+                    <input type="date" name="filter" id="filter" class="form-control" placeholder="Pesquisar por data" aria-label="Pesquisar por data" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
+                    </div>
                 </div>
+            </form>
+                
             
-{#                <a href="{% url 'updateAttendanceConsultorio' %}" id="attendanceUrl" style="visibility: hidden;"></a>#}
-               <br><br><br>
-        <script>
-            console.log('{{attendances.length}}')
-        </script>
-        {% if attendances.length != 0 %}
-                <script>
-                    console.log('{{attendances}}')
-                </script>
-                <div class="container">
-                    <table class="table">
-                        <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">Ficha</th>
-                            <th scope="col">Nome completo</th>
-                            <th scope="col">Data de nascimento</th>
-                            <th scope="col">Criação do atendimento</th>
-                            <th scope="col">Data da triagem</th>
-                            <th scope="col">Atender?</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            {% for attendance in attendances %}
-                            <tr>
-                                <td scope="row">{{ attendance.num }}</td>
-                                <th scope="row">{{attendance.patient.name}}</th>
-                                <td scope="row">{{attendance.patient.birth_date}}</td>
-                                <td scope="row">{{attendance.created_at}}</td>
-                                <td scope="row">{{attendance.moment_triagem}}</td>
-                                <td scope="row"> <input class="form-check-input" style="margin-left: 20px; vertical-align: middle !important; position: relative !important;"type="checkbox" name="" id="" onclick="redirect('{{attendance.id}}', '{{attendance.num}}')"> </td>
+            <a href="{% url 'atenderPacienteConsultorio' %}" id="attendanceUrl" style="visibility: hidden;"></a>
+            <br><br><br>
 
-                            </tr>
-                            {% endfor %} 
-                        </tbody>
-                    </table>
-                </div>
+        {% if attendances.length != 0 %}
+               
+                
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Ficha</th>
+                        <th scope="col">Nome completo</th>
+                        <th scope="col">Data de nascimento</th>
+                        <th scope="col">Criação do atendimento</th>
+                        <th scope="col">Data da triagem</th>
+                        <th scope="col">Atender?</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for attendance in attendances %}
+                        <tr>
+                            <td scope="row">{{ attendance.num }}</td>
+                            <th scope="row">{{attendance.patient.name}}</th>
+                            <td scope="row">{{attendance.patient.birth_date}}</td>
+                            <td scope="row">{{attendance.created_at}}</td>
+                            <td scope="row">{{attendance.moment_triagem}}</td>
+                            <td scope="row">
+                                 <input class="form-check-input" style="margin-left: 20px; vertical-align: middle !important; position: relative !important;"type="checkbox" name="" id="" onclick="redirect('{{attendance.id}}')"> 
+                            </td>
+
+                        </tr>
+                        {% endfor %} 
+                    </tbody>
+                </table>
+               
             {% else %}
                 <div class="container">
                     <h3 style="text-align: center;">Nenhum atendimento pendente!</h3>
@@ -75,12 +74,11 @@
     </div>
 
     <script>
-        function addInterval() {
-            //setInterval(document.location.reload(true), 600000000);
-        }
-        function redirect(id, ficha) {
+  
+        function redirect(id) {
+            console.log(id);
             const url = document.getElementById('attendanceUrl').href;
-            const query = `?id=${id}&ficha=${ficha}`;
+            const query = `?id=${id}`;
             document.location.reload(true);
             window.open(url + query);
         }

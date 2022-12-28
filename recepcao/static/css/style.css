@@ -109,3 +109,8 @@
     margin-bottom: 24px !important;
     margin-top: 0px;
 }
+
+tr:hover{
+    background:#2125294a;
+    color:#FFF;
+}

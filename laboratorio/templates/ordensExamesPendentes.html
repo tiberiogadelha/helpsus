@@ -1,56 +1,67 @@
-{% extends 'basePharmacy.html'%}
+{% extends 'baseLaboratorio.html'%}
 {% load bootstrap4 %}
 {% load static %}
 {% block content %}
-    <title>Atendimento confirmado</title>
+    <title>Exames pendentes</title>
 </head>
 <body>
-    <div class='container'>
-        <center>
+    <div class='body-content'>
+
             <br>
             {% bootstrap_messages %}
             <br>
             
             <br>
-            <div class="container">
-                <div>
-                    <form action="" method="get">
-                        <div class="input-group">
-                            <input type="date" name="filter" id="filter" class="form-control" placeholder="Pesquisar por data" aria-label="Pesquisar por data" aria-describedby="basic-addon2">
-                            <div class="input-group-append">
-                              <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
-                            </div>
+            <a href="{% url 'liberarExame' %}" id="attendanceUrl" style="visibility: hidden;"></a>
+            <div>
+                <form action="" method="get">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="patient" id="patient" placeholder="Nome paciente" aria-label="paciente" aria-describedby="basic-addon1">
+                        <input type="date" name="filter" id="filter" class="form-control" placeholder="Pesquisar por data" aria-label="Pesquisar por data" aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                          <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
                         </div>
-                    </form>
-                </div>
-               <br><br><br>
-                <table class="table">
-                    <thead class="thead-dark">
-                      <tr>
-                        <th scope="col">Ficha</th>
+                    </div>
+                </form>
+            </div>
+            <br>
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Nº ficha</th>
                         <th scope="col">Nome completo</th>
                         <th scope="col">Data de nascimento</th>
-                        <th scope="col">Criação da ordem</th>
-                        <th scope="col">Atender?</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                        {% for exam in exames %}
-                        <tr>
-                            <td scope="row">{{ attendance.num }}</td>
-                            <th scope="row">{{attendance.patient.name}}</th>
-                            <td scope="row">{{attendance.patient.birth_date}}</td>
-                            <td scope="row">{{attendance.created_at}}</td>
-                            <td scope="row" style="text-align: center;">{{attendance.creation_hour}}</td>
-                            <td scope="row">{{attendance.status}}</td>
-                            <td scope="row" style="display: flex; justify-content: center;"><a href="{% url 'removeAttendance' %}?id={{attendance.id}}"><img src="{% static 'imgs/delete.png' %}" alt="X" style="width: 19px;"> </a></td>
-                        </tr>
-                        {% endfor %} 
-                    </tbody>
-                  </table>
-            </div>
+                        <th scope="col">Data/hora requisição</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for exam in exams %}
+                    <tr>
+                        <td scope="row">{{ exam.attendance.num }}</td>
+                        <th scope="row">{{exam.patient.name}}</th>
+                        <td scope="row">{{exam.patient.birth_date}}</td>
+                        <td scope="row">{{exam.created_at}}</td>
+                        <td scope="row" style="display: flex; justify-content: center;">
+                            <button class="btn btn-primary" onclick="redirect('{{exam.id}}')" >Detalhes</button>
+                        </td>
+                    </tr>
+                    {% endfor %} 
+                </tbody>
+                </table>
+            
+
+            <script>
+  
+                function redirect(id) {
+                    const url = document.getElementById('attendanceUrl').href;
+                    const query = `?id=${id}`;
+                    document.location.reload(true);
+                    window.open(url + query);
+                }
+            </script>
     
-        </center>
+
              
     </div>
 

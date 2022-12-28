@@ -7,10 +7,12 @@ from dateutil.relativedelta import relativedelta
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import Count
-from django.http import request
+from django.http import request, HttpResponse
 from django.contrib import messages
+from django.template.response import TemplateResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+import mimetypes
 
 from consultorio.serializers import MedicationOrderSerializer, AttendanceHistorySerializer, PatientBasicSerializer, \
     TriagemSerializer, ExamOrderSerializer
@@ -362,8 +364,7 @@ class IssueSickNoteView(LoginRequiredMixin, TemplateView):
         attendance_id = self.request.GET.get('attendance_id')
 
         attendances = Attendance.objects.alias(qty_notes=Count('sick_notes')).filter(
-            status='triagem',
-            qty_notes=0
+            status='triagem'
         ).order_by('-moment_consultorio')
 
         context['attendances'] = attendances
@@ -393,9 +394,9 @@ class IssueSickNoteView(LoginRequiredMixin, TemplateView):
             messages.error(request, "Atendimento não encontrado!")
             return
 
-        if attendance.sick_notes.count() > 1:
-            messages.error(request, "Atendimento já possui atestado emitido!")
-            return
+        # if attendance.sick_notes.count() > 1:
+        #     messages.error(request, "Atendimento já possui atestado emitido!")
+        #     return
 
         days = int(data['days'])
         if days < 1:
@@ -419,8 +420,21 @@ class IssueSickNoteView(LoginRequiredMixin, TemplateView):
         attendance.sick_notes.add(sick_note)
 
         messages.success(request, 'Atestado emitido com sucesso!')
-        return redirect('viewAttendances')
+        return TemplateResponse(request, 'emitirAtestado.html', context={'sick_note': str(sick_note.pk)})
 
+
+@api_view(['GET'])
+def download_sick_note(_, pk):
+    try:
+        sick_note = SickNote.objects.get(pk=pk)
+        mime_type, _ = mimetypes.guess_type(sick_note.document.path)
+        response = HttpResponse(sick_note.document.file, content_type=mime_type)
+        response['Content-Disposition'] = "attachment; filename=%s" % sick_note.document.name
+        response.write(sick_note.document)
+        return response
+    except Exception as e:
+        print(e)
+        return HttpResponse({}, status=400)
 
 
 @api_view(['GET'])

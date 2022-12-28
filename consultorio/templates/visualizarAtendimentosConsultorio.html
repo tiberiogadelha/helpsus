@@ -22,10 +22,14 @@
         
             <form action="" method="get">
                 <div class="input-group">
-                    <input type="date" name="filter" id="filter" class="form-control" placeholder="Pesquisar por data" aria-label="Pesquisar por data" aria-describedby="basic-addon2">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="patient" id="patient" placeholder="Nome paciente" aria-label="paciente" aria-describedby="basic-addon1">
+                        <input type="date" name="filter" id="filter" class="form-control" placeholder="Pesquisar por data" aria-label="Pesquisar por data" aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                          <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
+                        </div>
                     </div>
+                    
                 </div>
             </form>
                 
@@ -39,12 +43,12 @@
                 <table class="table">
                     <thead class="thead-dark">
                     <tr>
-                        <th scope="col">Ficha</th>
+                        <th scope="col">Nº ficha</th>
                         <th scope="col">Nome completo</th>
                         <th scope="col">Data de nascimento</th>
-                        <th scope="col">Criação do atendimento</th>
-                        <th scope="col">Data da triagem</th>
-                        <th scope="col">Atender?</th>
+                        <th scope="col">Data da entrada</th>
+                        <th scope="col">Prioridade</th>
+                        <th scope="col"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -54,9 +58,10 @@
                             <th scope="row">{{attendance.patient.name}}</th>
                             <td scope="row">{{attendance.patient.birth_date}}</td>
                             <td scope="row">{{attendance.created_at}}</td>
-                            <td scope="row">{{attendance.moment_triagem}}</td>
+                            <td scope="row">{{attendance.priority}}</td>
                             <td scope="row">
-                                 <input class="form-check-input" style="margin-left: 20px; vertical-align: middle !important; position: relative !important;"type="checkbox" name="" id="" onclick="redirect('{{attendance.id}}')"> 
+                                <button class="btn btn-primary" onclick="redirect('{{attendance.id}}')" >Atender</button>
+
                             </td>
 
                         </tr>
@@ -76,7 +81,6 @@
     <script>
   
         function redirect(id) {
-            console.log(id);
             const url = document.getElementById('attendanceUrl').href;
             const query = `?id=${id}`;
             document.location.reload(true);

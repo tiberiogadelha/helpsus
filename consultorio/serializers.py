@@ -134,6 +134,8 @@ class ExamOrderSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField(read_only=True)
     created_at = serializers.SerializerMethodField(read_only=True)
     order_details = serializers.SerializerMethodField(read_only=True)
+    order_details_req = serializers.SerializerMethodField(read_only=True)
+    released_at = serializers.SerializerMethodField(read_only=True)
 
     def get_attendance(self, obj):
         attendance = Attendance.objects.get(exams_orders=obj.pk)
@@ -151,15 +153,33 @@ class ExamOrderSerializer(serializers.ModelSerializer):
     def get_created_at(self, obj):
         return obj.created_at.strftime('%d/%m/%Y às %H:%M')
 
+    def get_released_at(self, obj):
+        return '--' if obj.released_at is None else obj.released_at.strftime('%d/%m/%Y às %H:%M')
+
     def get_exams(self, obj):
         return ExamInstanceSerializer(obj.exams, many=True).data
 
     def get_order_details(self, obj):
         order_details = ''
-        for exam in obj.exams:
-            order_details = order_details + f'{exam.label}, '
+        for index, exam in enumerate(obj.exams.all()):
+            if index != obj.exams.count() - 1:
+                order_details = order_details + f'{exam.label}, '
+            else:
+                order_details = order_details + f'{exam.label}'
+        return order_details
+
+    def get_order_details_req(self, obj):
+        order_details = ''
+        for index, exam in enumerate(obj.exams.all()):
+            if index != obj.exams.count() - 1:
+                order_details = order_details + f'{exam.label}, \n'
+            else:
+                order_details = order_details + f'{exam.label}'
         return order_details
 
     class Meta:
         model = ExamOrder
-        fields = ['id', 'created_at', 'attendance', 'patient', 'order', 'status', 'exams', 'order_details']
+        fields = [
+            'id', 'created_at', 'attendance', 'patient', 'order', 'status', 'exams', 'order_details',
+            'order_details_req', 'released_at'
+        ]

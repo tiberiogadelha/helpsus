@@ -72,8 +72,8 @@
 
                             </div>
 
-                            <div style="border: 1px solid grey; border-radius:8px; padding: 16px">
-                                <h4 style="font-size: 1.25rem; text-decoration: underline;">Dados do atestado</h4>
+                            <div class="div-box">
+                                <h4 class="div-box-title">Dados do atestado</h4>
                                 <div class="row custom-row mt-8">
                                     <div class="col-4 input-group">
                                         <div class="input-group-prepend">
@@ -105,8 +105,14 @@
                     <br>
                     <br>
                 {% buttons %}
-                    <button type="submit" class="btn btn-success" id='btnNewAttendance'>Gerar atestado</button>
-                    <button type="menu" class="btn btn-info"><a href="{% url 'indexClinic' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                <div style="display: flex; justify-content: center; gap: 8px;">
+                    <button type="menu" class="btn btn-secondary"><a href="{% url 'indexClinic' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                    <button type="submit" class="btn btn-success" id='btnNewAttendance'>Emitir atestado</button>
+                    {% if sick_note %}
+                        <a href="{% url 'downloadSickNote' sick_note %}" class="btn btn-primary">Download</a>
+                    {%endif%}
+                </div>
+
                 {% endbuttons %}
                 
       

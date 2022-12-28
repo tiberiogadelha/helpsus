@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
@@ -6,6 +8,7 @@ from django.views.generic import TemplateView
 
 from consultorio.serializers import ExamOrderSerializer
 from core.models import ExamInstance, ExamOrder, Attendance
+from helpSUS.settings import TIME_ZONE
 
 
 class IndexLaboratorio(LoginRequiredMixin, TemplateView):
@@ -73,7 +76,7 @@ class PendingExamView(LoginRequiredMixin, TemplateView):
         context = super(PendingExamView, self).get_context_data(**kwargs)
 
         exams = ExamOrder.objects.filter(status='0').order_by('created_at')
-        context['exams'] = exams
+        context['exams'] = ExamOrderSerializer(exams, many=True).data
         return context
 
 
@@ -107,10 +110,12 @@ class ConfirmExamView(LoginRequiredMixin, TemplateView):
             exam.status = 1
             exam.was_released = True
             exam.released_by = request.user
+            exam.released_at = datetime.datetime.now()
             exam.save()
-        except Exception:
+        except Exception as e:
+            print(e)
             messages.error(request, 'Ordem exame não encontrada ou já finalizada!')
-            return
+            return super().get(request, *args, **kwargs)
 
         messages.success(request, 'Ordem exame atualizada com sucesso!')
         return super().get(request, *args, **kwargs)

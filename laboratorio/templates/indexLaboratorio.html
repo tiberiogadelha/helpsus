@@ -4,6 +4,7 @@
 {% block content %}
     <title>Laboratório!</title>
     <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <script src="{% static 'js/indexlab.js' %}"></script>
 </head>
 <body>
     <div class='body-content'>
@@ -57,7 +58,7 @@
                 </div>
             </button>
 
-            <button type="button" onclick="redirectTo('getAttendancesTriagem')" class="btn btn-secondary option-button">
+            <button type="button" onclick="redirectTo('createExam')" class="btn btn-secondary option-button">
                 <div class="row">
                     <div class="col-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-list-ul" viewBox="0 0 40 20">
@@ -69,7 +70,7 @@
                 </div>
             </button>
 
-            <button type="button" onclick="redirectTo('getAttendancesTriagem')" class="btn btn-secondary option-button">
+            <button type="button" onclick="redirectTo('editExams')" class="btn btn-secondary option-button">
                 <div class="row">
                     <div class="col-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-list-ul" viewBox="0 0 40 20">

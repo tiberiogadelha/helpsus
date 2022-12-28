@@ -288,6 +288,7 @@ class ExamOrder(Base):
     was_released = models.BooleanField(default=False)
     status = models.IntegerField('Status', default=0, choices=status_enum)
     exams = models.ManyToManyField(ExamInstance)
+    released_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         verbose_name = 'Solicitação de exame'

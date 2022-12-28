@@ -16,7 +16,7 @@ from .models import Employee
 
 ROUTER_TABLE = {
     'recepcao': 'indexReception',
-    'laboratorio': 'indexLaboratory',
+    'laboratorio': 'indexLaboratorio',
     'triagem': 'indexTriagem',
     'consultorio': 'indexClinic',
     'farmacia': 'indexPharmacy'

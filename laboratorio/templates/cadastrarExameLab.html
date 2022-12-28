@@ -1,9 +1,9 @@
-{% extends 'baseConsultorio.html'%}
+{% extends 'baseLaboratorio.html'%}
 {% load bootstrap4 %}
 {% load static %}
 {% block content %}
     <title>Cadastrar exame</title>
-    <link rel="stylesheet" href="{% static 'style/style.css'%}">
+    <link rel="stylesheet" href="{% static 'css/style.css'%}">
 
 </head>
 <body>
@@ -36,7 +36,7 @@
             
                     <div class="row mt-4" style="justify-content: center;">
                         {% buttons %}
-                            <button type="menu" class="btn btn-secondary"><a href="{% url 'indexClinic' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                            <button type="menu" class="btn btn-secondary"><a href="{% url 'indexLaboratorio' %}" style="color: white; text-decoration:none">Voltar</a></button>
                             <button type="submit" id="confirmButton" class="btn btn-success" style="color: white;">Criar</button>
                         {% endbuttons %}
                     </div>

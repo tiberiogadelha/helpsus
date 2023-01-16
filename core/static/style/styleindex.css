@@ -1,0 +1,5 @@
+.custom-selector > div > label {
+    width: 73px;
+    display: flex;
+    justify-content: center;
+}

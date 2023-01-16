@@ -1,0 +1,113 @@
+{% extends 'baseLaboratorio.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Atualizar requisição de exame</title>
+
+    <link rel="stylesheet" href="{% static '/css/updateorder.css' %}">
+</head>
+<body>
+    <div class='body-content'>
+        <br>
+        {% bootstrap_messages %}
+
+        <br>
+
+        <div class="row" style="margin-left: 0; margin-right: 0; justify-content: space-between">
+            <div class="col-6" style="padding: 0; padding-right: 16px">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="patient_span">Status da requisição: </span>
+                    </div>
+                    <input type="text" id="patient_status" name="patient_status" class="form-control" aria-label="Default" aria-describedby="patient_data" value="{{exam.status}}" disabled>
+                </div>
+            </div>
+
+            <div class="col-6" style="padding: 0;">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="patient_span">Solicitada em: </span>
+                    </div>
+                   
+                    <input type="text" id="patient_status" name="patient_status" class="form-control" aria-label="Default" aria-describedby="patient_data" value="{{exam.created_at}}" disabled>
+                    
+                </div>
+            </div>
+        </div>
+
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="patient_span">Nome do paciente: </span>
+            </div>
+            <input type="text" id="patient_name" name="patient_name" class="form-control" aria-label="Default" aria-describedby="patient_data" value="{{exam.patient.name}}" disabled>
+        </div>
+
+        <div class="row" style=" justify-content: space-between; padding: 0px !important;">
+            <div class="col-4 input-group mb-3" style="padding: 0; padding-right: 16px">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="patient_span">Idade: </span>
+                </div>
+                <input type="text" id="age" name="age" class="form-control" aria-label="Default" aria-describedby="age" value="{{exam.patient.age}}" disabled>
+            </div>
+
+            <div class="col-4 input-group mb-3" style="padding: 0; padding-right: 16px">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="patient_span">Sexo: </span>
+                </div>
+                <input type="text" id="gender" name="gender" class="form-control" aria-label="Default" aria-describedby="age" value="{{exam.patient.gender}}" disabled>
+            </div>
+
+            <div class="col-4 input-group mb-3" style="padding: 0">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="patient_span">Liberada em: </span>
+                </div>
+                <input type="text" id="age" name="age" class="form-control" aria-label="Default" aria-describedby="age" value="{{exam.released_at}}" disabled>
+            </div>
+
+             <div class="col-sm-12 input-group mb-3" style="padding: 0">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="patient_span">Requisição: </span>
+                </div>
+                <textarea name="" class="form-control" id="" cols="30" rows="10" disabled>{{exam.order_details_req}}</textarea>
+
+            </div>
+
+        </div>
+
+
+        <form id="aceitarForm" action="{% url 'liberarExame' %}" method="post" class="form" autocomplete="off">
+            {% csrf_token %}
+            <input type="text" name="id" value="{{exam.id}}" style="visibility: hidden">
+        </form>
+
+        <form id="recusarForm" action="{% url 'handleMedicationOrder' %}" method="post" class="form" autocomplete="off">
+            <input type="text" name="order_id" value="{{exam.id}}" style="visibility: hidden">
+            <input type="text" name="action" value="rejeitar" style="visibility: hidden">
+            {% csrf_token %}
+        </form>
+
+        {% if exam.status == 'Pendente' %}
+            <div class="row" style="margin-right: 0; margin-left: 0; justify-content: center;">
+                <button type="submit" class="btn btn-primary" form="aceitarForm" value="Submit">Liberar solicitação</button>
+            </div>
+        {% endif %}
+
+
+             
+    </div>
+
+    <script>
+        function updateHour() {
+            const now = Date.now();
+            const date = new Date(now);
+            const div = document.getElementById('attendanceHour');
+            if (div) div.value = date.toLocaleDateString() + ' às ' + date.toLocaleTimeString().slice(0,5);
+            
+        }      
+    </script>  
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'baseTriagem.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Atendimentos aguardando</title>
+</head>
+<body>
+    <div class='container'>
+        <center>
+            <br>
+            <br>
+            {% if form.errors %}
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>{{ error|escape }}</strong>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>{{ error|escape }}</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+
+            {% endif %}
+            {% if attendance.length %}
+
+                    <form action="{% url 'updateAttendanceTriagem' %}" method="post" class="form" autocomplete="on">
+                        {% csrf_token %} 
+                        <input type="text" name="id"  style="visibility: hidden;" value="{{attendance.id}}">
+                        <input type="text" name="id_triagem"  style="visibility: hidden;" value="{{triagem.id}}">
+                        <div class="form-group"><label for="id_name">Nome do paciente</label><input type="text" name="name" maxlength="150" class="form-control" value="{{attendance.patient.name}}" readonly></div>
+                        <div class="form-group"><label for="birth_date">Data de nascimento</label><input type="text" id="birth_date" name="birth_date" maxlength="150" class="form-control" value="{{attendance.patient.birth_date}}" readonly></div>
+                        <div class="form-group"><label for="birth_date">Idade</label><input type="text" id="age" name="age" maxlength="150" class="form-control" value="{{meta.age}}" readonly></div>
+                        <div class="form-group"><label for="cns">CNS</label><input type="text" id="cns" name="cns" class="form-control" value="{{attendance.patient.cns}}" readonly></div>  
+                        <div class="form-group"><label for="birth_date">Entrada do paciente na unidade</label><input type="text" id="entrance" name="entrance" maxlength="150" class="form-control" value="{{meta.entrance}}" readonly></div>  
+                        <div class="form-group"><label for="id_temperature">Temperatura em °C </label><input type="number" name="temperature" min="30" max="50" step="any" class="form-control" placeholder="Temperatura em °C" title="" required id="id_temperature"></div>
+                        <iframe style="display:none" onload="loadTags('id_temperature', {{triagem.vital_data.temperature}});" src="g1.globo.com"></iframe>
+                        <div class="form-group"><label for="id_pas">Pressão sistólica</label><input type="number" name="pas" min="0" max="400" class="form-control" placeholder="Pressão sistólica" title="" required id="id_pas" value="{{triagem.pas}}"></div>
+                        <iframe style="display:none" onload="loadTags('id_pas', {{triagem.vital_data.pas}});" src="g1.globo.com"></iframe>
+                        <div class="form-group"><label for="id_pad">Pressão diástolica</label><input type="number" name="pad" min="0" max="400" class="form-control" placeholder="Pressão diástolica" title="" required id="id_pad"></div>
+                        <iframe style="display:none" onload="loadTags('id_pad', {{triagem.vital_data.pad}});" src="g1.globo.com"></iframe>
+                        <div class="form-group"><label for="id_saturation">Satuação do O2 em %</label><input type="number" name="saturation" min="0" max="100" class="form-control" placeholder="Satuação do O2 em %" title="" required id="id_saturation"></div>
+                        <iframe style="display:none" onload="loadTags('id_saturation', {{triagem.vital_data.saturation}});" src="g1.globo.com"></iframe>
+                        <div class="form-group"><label for="id_heart_beats">Batimentos Cardiacos em BPM</label><input type="number" name="heart_beats" min="0" max="600" class="form-control" placeholder="Batimentos Cardiacos em BPM" title="" required id="id_heart_beats" ></div>
+                        <iframe style="display:none" onload="loadTags('id_heart_beats', {{triagem.vital_data.heart_beats}});" src="g1.globo.com"></iframe>
+                        <div class="form-group"><label for="id_description">Descrição dos sintomas</label><textarea name="description" cols="40" rows="10" class="form-control" placeholder="Descrição dos sintomas" title="" required id="id_description">{{triagem.description}}</textarea>
+                        </div>
+                       
+                        <div class="form-group"><label for="id_priority">Prioridade</label><select name="priority" class="form-control" title="" id="id_priority">
+                            <option value="0" {% if triagem.priority == 0 %} selected {% endif %}>Normal</option>
+
+                            <option value="1" {% if triagem.priority == 1 %} selected {% endif %}>Moderada</option>
+
+                            <option value="2" {% if triagem.priority == 2 %} selected {% endif %}>Alta</option>
+                        </select></div>
+                        
+                        {% buttons %}
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal">Salvar</button>
+                            <button type="reset" class="btn btn-warning">Limpar dados</button>
+                            <button type="menu" class="btn btn-secondary"><a href="{% url 'index' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                        {% endbuttons %}
+                        
+                        <div class="modal" tabindex="-1" role="dialog" id="modal">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Atenção!</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <p>Confirme todos os dados antes de salvar, pois não haverá mais como editar.</p>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-primary">Confirmar</button>
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                    </form>    
+
+            {% else %}  
+                    <div class='container'>
+                        <div class="alert alert-danger" role="alert">
+                            Atendimento não encontrado ou já foi excluído!
+                        </div>
+                    </div>
+            {% endif %}
+
+        </center>
+             
+    </div>
+
+    <script>
+        function loadElements(id, value) {
+            const element = document.getElementById(id)
+            element.setAttribute('value', parseFloat(value))
+        }
+
+        function loadTags(id, value) {
+            const element = document.getElementById(id)
+            if (id === 'id_temperature')
+                element.setAttribute('value', parseFloat(value))
+            else element.setAttribute('value', parseInt(value))
+            return;
+        }
+        
+    </script>
+
+
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

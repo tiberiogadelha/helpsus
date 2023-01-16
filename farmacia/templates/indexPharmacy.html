@@ -1,0 +1,92 @@
+{% extends 'basePharmacy.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Farmácia!</title>
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+</head>
+<body>
+    <div class='body-content'>
+        <br>
+        {% bootstrap_messages %}
+        <br>
+
+        <div class="row">
+            <div class="col-4 alert alert-primary" role="alert">
+                <span>Olá, {{ user_name }}! Seja bem-vindo à farmácia!</span>
+                
+            </div>
+            <div class="col-4">
+                
+            </div>
+            <div class="col-4 alert alert-dark" role="alert">
+                <p>Data/Hora: <span id="datetimebox"></span> </p>
+                <script>
+                    setInterval(() => {
+                        getDatetime();
+                    }, 1000)
+
+                </script> 
+            </div>
+
+        </div>
+
+
+
+        <div class="options-div">
+            <button type="button" onclick="redirectTo('getAttendancesTriagem')" class="btn btn-secondary option-button">
+                <div class="row">
+                    <div class="col-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-capsule" viewBox="0 0 40 20">
+                            <path d="M1.828 8.9 8.9 1.827a4 4 0 1 1 5.657 5.657l-7.07 7.071A4 4 0 1 1 1.827 8.9Zm9.128.771 2.893-2.893a3 3 0 1 0-4.243-4.242L6.713 5.429l4.243 4.242Z"/>
+                        </svg>
+                    </div>
+                    <div class="col-9 option-text "><span>Requisições pendentes</span></div>
+                </div>
+            </button>
+
+            <button type="button" onclick="redirectTo('getAttendancesTriagem')" class="btn btn-secondary option-button">
+                <div class="row">
+                    <div class="col-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-list-ul" viewBox="0 0 40 20">
+                            <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                        </svg>
+                    </div>
+                    <div class="col-9 option-text "><span>Exibir requisições finalizadas</span></div>
+                </div>
+            </button>
+        </div>
+
+        <div class="row">
+            <div class="col-md-5 alert alert-info" role="alert">
+                <div class="col-md-12">
+                    <h4>Sobre a Você</h4>
+                    <ul>
+                        <li>Pacientes triados: <b></b></li>
+                        <li>Atendimentos finalizados: <b></b></li>
+            
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-5 alert alert-info" role="alert">
+                <div class="col-md-12">
+
+                    <h4>Sobre a Unidade</h4>
+                    <ul>
+                        <li>Pacientes cadastrados: <b>{{ qty_total_patients }}</b></li>
+                        <li>Atendimentos finalizados: <b>{{ qty_total_finished_attendance }}</b></li>
+                        <li>Atestados emitidos: <b>{{ qty_total_sick_notes }}</b></li>
+                        <li>Exames solicitados: <b>{{ qty_total_exams_orders }}</b></li>
+                        <li>Medicamentos solicitados: <b>{{ qty_total_medications_orders }}</b></li>
+                        <li>Funcionários ativos: <b>{{ qty_total_employees }}</b></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

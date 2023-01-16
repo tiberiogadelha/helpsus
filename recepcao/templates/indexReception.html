@@ -1,0 +1,142 @@
+{% extends 'baseReception.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Recepção!</title>
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <script src="{% static 'js/base.js' %}"></script>
+</head>
+<body>
+    <div class='body-content'>
+            <br>
+            {% bootstrap_messages %}
+            <br>
+
+            <div class="row">
+                <div class="col-4 alert alert-primary" role="alert">
+                    <span>Olá, {{ user_name }}! Seja bem-vindo à recepção!</span>
+                    
+                </div>
+                <div class="col-4">
+                    
+                </div>
+                <div class="col-4 alert alert-dark" role="alert">
+                    <p>Data/Hora: <span id="datetimebox"></span> </p>
+                    <script>
+                        setInterval(() => {
+                            getDatetime();
+                        }, 1000)
+
+                    </script> 
+                </div>
+
+            </div>
+
+
+
+            <div class="options-div">
+                <button type="button" onclick="redirectTo('createPatient')" class="btn btn-secondary option-button">
+                    <div class="row">
+                        <div class="col-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 40 20">
+                                <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                                <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                            </svg>
+    
+    
+                        </div>
+    
+                        <div class="col-9 option-text "><span>Cadastrar paciente</span></div>
+    
+                    </div>
+                  
+                </button>
+    
+                <button type="button" onclick="redirectTo('editPatient')" class="btn btn-secondary option-button">
+                    <div class="row">
+                        <div class="col-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 40 20">
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                            </svg>
+    
+    
+                        </div>
+    
+                        <div class="col-9 option-text ">Editar Paciente</div>
+    
+                    </div>
+                  
+                </button>
+    
+    
+    
+                <button type="button" onclick="redirectTo('newAttendance')" class="btn btn-secondary option-button">
+                    <div class="row">
+                        <div class="col-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-hospital" viewBox="0 0 40 20">
+                                <path d="M8.5 5.034v1.1l.953-.55.5.867L9 7l.953.55-.5.866-.953-.55v1.1h-1v-1.1l-.953.55-.5-.866L7 7l-.953-.55.5-.866.953.55v-1.1h1ZM13.25 9a.25.25 0 0 0-.25.25v.5c0 .138.112.25.25.25h.5a.25.25 0 0 0 .25-.25v-.5a.25.25 0 0 0-.25-.25h-.5ZM13 11.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5Zm.25 1.75a.25.25 0 0 0-.25.25v.5c0 .138.112.25.25.25h.5a.25.25 0 0 0 .25-.25v-.5a.25.25 0 0 0-.25-.25h-.5Zm-11-4a.25.25 0 0 0-.25.25v.5c0 .138.112.25.25.25h.5A.25.25 0 0 0 3 9.75v-.5A.25.25 0 0 0 2.75 9h-.5Zm0 2a.25.25 0 0 0-.25.25v.5c0 .138.112.25.25.25h.5a.25.25 0 0 0 .25-.25v-.5a.25.25 0 0 0-.25-.25h-.5ZM2 13.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5Z"/>
+                                <path d="M5 1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a1 1 0 0 1 1 1v4h3a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h3V3a1 1 0 0 1 1-1V1Zm2 14h2v-3H7v3Zm3 0h1V3H5v12h1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3Zm0-14H6v1h4V1Zm2 7v7h3V8h-3Zm-8 7V8H1v7h3Z"/>
+                              </svg>
+    
+    
+                        </div>
+    
+                        <div class="col-9 option-text ">Novo atendimento</div>
+                    </div>
+                  
+                </button>
+    
+    
+                <button type="button" onclick="redirectTo('viewAttendances')" class="btn btn-secondary option-button">
+                    <div class="row">
+                        <div class="col-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-view-list" viewBox="0 0 40 20">
+                                <path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1H3zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2zm0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14z"/>
+                              </svg>
+    
+    
+                        </div>
+    
+                        <div class="col-9 option-text ">Visualizar atendimentos</div>
+                    </div>
+                </button>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5 alert alert-info" role="alert">
+                    <div class="col-md-12">
+                        <h4>Sobre a Você</h4>
+                        <ul>
+                            <li>Pacientes cadastrados: <b></b></li>
+                            <li>Atendimentos iniciados: <b></b></li>
+                            <li>Atendimentos cancelados: <b></b></li>
+                
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-5 alert alert-info" role="alert">
+                    <div class="col-md-12">
+
+                        <h4>Sobre a Unidade</h4>
+                        <ul>
+                            <li>Pacientes cadastrados: <b>32</b></li>
+                            <li>Atendimentos finalizados: <b>2</b></li>
+                            <li>Atestados emitidos: <b>4</b></li>
+                            <li>Exames solicitados: <b>2</b></li>
+                            <li>Medicamentos solicitados: <b>3</b></li>
+                            <li>Funcionários ativos: <b>4</b></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+   
+             
+    </div>
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

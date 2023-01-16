@@ -1,0 +1,64 @@
+{% extends 'baseReception.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Atendimento confirmado</title>
+</head>
+<body>
+    <div class='container'>
+        <center>
+            <br>
+            {% bootstrap_messages %}
+            <br>
+            
+            <br>
+            <div class="container">
+                <div>
+                    <form action="" method="get">
+                        <div class="input-group">
+                            <input type="date" name="filter" id="filter" class="form-control" placeholder="Pesquisar por data" aria-label="Pesquisar por data" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                              <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+               <br><br><br>
+                <table class="table">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th scope="col">Ficha</th>
+                        <th scope="col">Nome completo</th>
+                        <th scope="col">Data de nascimento</th>
+                        <th scope="col">Criação do atendimento</th>
+                        <th scope="col">Horário da entrada</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Excluir?</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for attendance in attendances %}
+                        <tr>
+                            <td scope="row">{{ attendance.num }}</td>
+                            <th scope="row">{{attendance.patient.name}}</th>
+                            <td scope="row">{{attendance.patient.birth_date}}</td>
+                            <td scope="row">{{attendance.created_at}}</td>
+                            <td scope="row" style="text-align: center;">{{attendance.creation_hour}}</td>
+                            <td scope="row">{{attendance.status}}</td>
+                            <td scope="row" style="display: flex; justify-content: center;"><a href="{% url 'removeAttendance' %}?id={{attendance.id}}"><img src="{% static 'imgs/delete.png' %}" alt="X" style="width: 19px;"> </a></td>
+                        </tr>
+                        {% endfor %} 
+                    </tbody>
+                  </table>
+            </div>
+    
+        </center>
+             
+    </div>
+
+
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

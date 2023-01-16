@@ -1,0 +1,116 @@
+.custom-navbar {
+    padding: 16px 140px;
+}
+
+.getout-button {
+    right: 0;
+    position: absolute;
+    margin-right: 16px;
+}
+
+.body-content {
+    
+    padding: 0 140px;
+}
+
+.option-button {
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: #fefefe !important;
+    width: 320px;
+    height: 80px;
+    border: 2px solid #343a40 !important;
+    color: black;
+
+}
+
+.option-button-2 {
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: #fefefe !important;
+    width: 320px;
+    height: 80px;
+    border: 2px solid grey !important;
+    color: black;
+
+}
+
+.option-button:hover  {
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: #007bffc4 !important;
+    width: 320px;
+    height: 80px;
+    color: white !important;
+    border: 1px solid #343a40 !important;
+
+}
+
+.option-button:focus  {
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: #007bffc4 !important;
+    width: 320px;
+    height: 80px;
+    color: white !important;
+    border: 1px solid #343a40 !important;
+
+}
+
+.option-button-2:hover  {
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: #007bffc4 !important;
+    width: 320px;
+    height: 80px;
+    color: white !important;
+    border: 1px solid #343a40 !important;
+}
+
+.option-button-2:focus {
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: #007bffc4 !important;
+    width: 320px;
+    height: 80px;
+    color: white !important;
+    border: 1px solid #343a40 !important;
+
+}
+
+.option-text {
+    display: flex;
+    align-items: center;
+    text-align: left;
+}
+
+.options-div {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 4px;
+    margin: 32px 0;
+}
+
+.row {
+    padding: 0px 20px;
+}
+
+.div-box {
+    border: 1px solid grey;
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.div-box-title {
+    font-size: 1.25rem !important;
+    color: #1b1414;
+    text-decoration: none !important;
+    border-bottom: 1px solid grey;
+    margin-bottom: 24px !important;
+    margin-top: 0px;
+}
+
+tr:hover{
+    background:#2125294a;
+    color:#FFF;
+}

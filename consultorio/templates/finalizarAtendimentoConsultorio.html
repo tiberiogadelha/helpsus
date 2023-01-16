@@ -1,0 +1,96 @@
+{% extends 'baseConsultorio.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Finalizar atendimento!</title>
+    <link rel="stylesheet" href="{% static 'style/style.css'%}">
+
+</head>
+<body>
+    <div class='body-content'>
+        
+        <br>
+        {% bootstrap_messages %}
+        <br>
+
+        {% if attendanceData %}
+
+            <form action="{% url 'finalizarAtendimento' %}" method="post" class="form" autocomplete="on">
+                {% csrf_token %}
+                
+                <div id="patient_values" class="div-box" style="margin-top: 32px;">
+                    <h4 class="div-box-title" style="margin-bottom: 0px !important;">Detalhes do paciente</h4>
+                        <input type="number" name="attendance_id" value="{{ attendanceData.id }}" style="visibility: hidden;">
+                        <div class="row" style="padding: 0;">
+                            <div class="col-8 form-floating details-field">
+                                <label for="namePatient">Nome</label>
+                                <input type="text" class="form-control" id="namePatient" value="{{ attendanceData.patient.name }}" readonly>
+
+                            </div>
+                            <div class="col-4 form-floating details-field">
+                                <label for="datePatient">Data de nascimento</label>
+                                <input type="text" class="form-control" id="datePatient" value="{{ attendanceData.patient.birth_date }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:  24px; padding: 0;">
+                            <div class="col-8 details-field">
+                                <label for="cnsPatient">CNS</label>
+                                <input type="text" class="form-control" id="cnsPatient" value="{{ attendanceData.patient.cns }}" readonly>
+                            </div>
+
+                            <div class="col-4 details-field">
+                                <label for="attendanceHour">Nº do atendimentoo: </label>
+                                <input type="text" class="form-control" id="attendanceHour" value="{{attendanceData.num}}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-floating details-field" style="margin-top:  24px">
+                            <label for="data">Parecer médico: </label>
+                            <textarea class="form-control" id="data" name="data" rows="4" cols="40"> </textarea>
+                        </div>
+
+                
+                        <div class="row mt-4" style="justify-content: center;">
+                            {% buttons %}
+                                <button type="menu" class="btn btn-secondary"><a href="{% url 'indexClinic' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                                <button type="button" class="btn btn-primary" id='btnNewMedRequest' data-toggle="modal" data-target="#modal">Finalizar</button>
+                            {% endbuttons %}
+                        </div>
+
+                        <div class="modal" tabindex="-1" role="dialog" id="modal">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title">Atenção!</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                    <div class="modal-body">
+                                    <p>Confirme todos os dados antes de salvar, pois não haverá mais como editar.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                        <button type="submit" class="btn btn-primary">Confirmar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                
+               
+                
+                
+        
+            </form>      
+        {% endif %}
+
+             
+    </div>
+    
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

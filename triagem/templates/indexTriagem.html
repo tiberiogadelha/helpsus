@@ -1,0 +1,89 @@
+{% extends 'baseTriagem.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Triagem!</title>
+    <link rel="stylesheet" href="{% static '/css/styletriagem.css' %}">
+    <script src="{% static '/js/basetriagem.js' %}"></script>
+</head>
+<body>
+    <div class='body-content'>
+        <br>
+        {% bootstrap_messages %}
+        <br>
+
+        <div class="row">
+            <div class="col-4 alert alert-primary" role="alert">
+                <span>Olá, {{ user_name }}! Seja bem-vindo à triagem!</span>
+                
+            </div>
+            <div class="col-4">
+                
+            </div>
+            <div class="col-4 alert alert-dark" role="alert">
+                <p>Data/Hora: <span id="datetimebox"></span> </p>
+                <script>
+                    setInterval(() => {
+                        getDatetime();
+                    }, 1000)
+
+                </script> 
+            </div>
+
+        </div>
+
+
+
+        <div class="options-div">
+            <button type="button" onclick="redirectTo('getAttendancesTriagem')" class="btn btn-secondary option-button">
+                <div class="row">
+                    <div class="col-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-clipboard-pulse" viewBox="0 0 40 20">
+                            <path fill-rule="evenodd" d="M10 1.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1Zm-5 0A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5v1A1.5 1.5 0 0 1 9.5 4h-3A1.5 1.5 0 0 1 5 2.5v-1Zm-2 0h1v1H3a1 1 0 0 0-1 1V14a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3.5a1 1 0 0 0-1-1h-1v-1h1a2 2 0 0 1 2 2V14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3.5a2 2 0 0 1 2-2Zm6.979 3.856a.5.5 0 0 0-.968.04L7.92 10.49l-.94-3.135a.5.5 0 0 0-.895-.133L4.232 10H3.5a.5.5 0 0 0 0 1h1a.5.5 0 0 0 .416-.223l1.41-2.115 1.195 3.982a.5.5 0 0 0 .968-.04L9.58 7.51l.94 3.135A.5.5 0 0 0 11 11h1.5a.5.5 0 0 0 0-1h-1.128L9.979 5.356Z"/>
+                        </svg>
+
+
+                    </div>
+
+                    <div class="col-9 option-text "><span>Triar paciente</span></div>
+
+                </div>
+              
+            </button>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-5 alert alert-info" role="alert">
+                <div class="col-md-12">
+                    <h4>Sobre a Você</h4>
+                    <ul>
+                        <li>Pacientes triados: <b></b></li>
+                        <li>Atendimentos finalizados: <b></b></li>
+            
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-5 alert alert-info" role="alert">
+                <div class="col-md-12">
+
+                    <h4>Sobre a Unidade</h4>
+                    <ul>
+                        <li>Pacientes cadastrados: <b>{{ qty_total_patients }}</b></li>
+                        <li>Atendimentos finalizados: <b>{{ qty_total_finished_attendance }}</b></li>
+                        <li>Atestados emitidos: <b>{{ qty_total_sick_notes }}</b></li>
+                        <li>Exames solicitados: <b>{{ qty_total_exams_orders }}</b></li>
+                        <li>Medicamentos solicitados: <b>{{ qty_total_medications_orders }}</b></li>
+                        <li>Funcionários ativos: <b>{{ qty_total_employees }}</b></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+</div>
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

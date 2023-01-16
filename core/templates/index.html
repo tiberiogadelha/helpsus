@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static%}
+{% load bootstrap4 %}
+{% block content %}
+    <title>HelpSUS!: Login</title>
+    <link rel="stylesheet" href="{% static 'style/styleindex.css'%}">
+</head>
+
+<body>
+  <center>
+    <br>
+    <div class='form-group'>
+      {% bootstrap_messages %}
+      <form action="{% url 'index' %}" method="post" class="form" autocomplete="off">
+        {% csrf_token %}
+        <h2>Login</h2>
+        <br>
+        <div class="row" style="display: block; justify-content: center; align-items: center;">
+
+
+          <div class="input-group mb-3" style="width: 600px;">
+            <input type="email" id="email" name="email" class="form-control" required placeholder="email@mail.com" aria-label="E-mail" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+              <span class="input-group-text" id="basic-addon2">E-mail</span>
+            </div>
+          </div>
+
+          <div class="input-group mb-3" style="width: 600px">
+            <input type="password" class="form-control" id="password" name="password" required type="password" placeholder="******" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+              <span class="input-group-text" id="basic-addon2">Senha</span>
+            </div>
+          </div>
+
+      
+          <div class="input-group mb-3 custom-selector" style="width: 600px">
+            <select name="department_select" id="department_select" class="custom-select" required id="inputGroupSelect02">
+              <option value="null" selected>Selecione...</option>
+              <option value="recepcao">Recepção</option>
+              <option value="laboratorio">Laboratório</option>
+              <option value="triagem">Triagem</option>
+              <option value="farmacia">Farmácia</option>
+              <option value="consultorio">Consultório</option>
+            </select>
+            <div class="input-group-append">
+              <label class="input-group-text" for="inputGroupSelect02">Setor</label>
+            </div>
+          </div>
+
+        </div>
+        
+        <p>
+          {% buttons %}
+          <button type="submit" class="btn btn-primary">Entrar</button>
+          {% endbuttons %}
+        </p>
+
+        <a id='openPasswordModal' href="{% url 'reqNewPassword' %}">Esqueceu sua senha?</a>
+        <p class="link">
+          Ainda não tem conta?
+          <a href="{% url 'signUp' %}">Cadastre-se</a>
+        </p>
+
+
+
+      </form>
+    </div>
+  </center>
+  <script>
+
+  </script>
+
+  {% bootstrap_javascript jquery='full' %}
+</body>
+
+</html>
+{% endblock %}

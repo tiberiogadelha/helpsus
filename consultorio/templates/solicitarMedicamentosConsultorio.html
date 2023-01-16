@@ -1,0 +1,113 @@
+{% extends 'baseConsultorio.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Solicitar Medicações!</title>
+    <link rel="stylesheet" href="{% static 'style/style.css'%}">
+
+</head>
+<body>
+    <div class='body-content'>
+        
+        <br>
+        {% bootstrap_messages %}
+        <br>
+        <form action="{% url 'solicitarMedicamentoConsultorio' %}" method="get">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="patient_span">Nome/CNS do paciente: </span>
+                </div>
+                <input list="attendances" type="text" id="attendance_data" name="attendance_data" class="form-control" aria-label="Default" aria-describedby="attendance_data" onchange="this.form.submit()">
+                <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
+            </div>
+
+            <datalist id="attendances">
+                {% for attendance in attendances %}
+                    <option value="{{ attendance.id }}"> {{ attendance.patient }} </option>
+                {% endfor %}   
+            </datalist>
+        </form>
+
+        {% if attendanceData %}
+
+            <form action="{% url 'solicitarMedicamentoConsultorio' %}" method="post" class="form" autocomplete="on">
+                {% csrf_token %}
+                
+                <div id="patient_values" class="div-box" style="margin-top: 32px;">
+                    <h4 class="div-box-title" style="margin-bottom: 0px !important;">Detalhes do paciente</h4>
+                        <input type="number" name="attendance_id" value="{{ attendanceData.id }}" style="visibility: hidden;">
+                        <div class="row" style="padding: 0;">
+                            <div class="col-8 form-floating details-field">
+                                <label for="namePatient">Nome</label>
+                                <input type="text" class="form-control" id="namePatient" value="{{ attendanceData.patient.name }}" readonly>
+
+                            </div>
+                            <div class="col-4 form-floating details-field">
+                                <label for="datePatient">Data de nascimento</label>
+                                <input type="text" class="form-control" id="datePatient" value="{{ attendanceData.patient.birth_date }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:  24px; padding: 0;">
+                            <div class="col-8 details-field">
+                                <label for="cnsPatient">CNS</label>
+                                <input type="text" class="form-control" id="cnsPatient" value="{{ attendanceData.patient.cns }}" readonly>
+                            </div>
+
+                            <div class="col-4 details-field">
+                                <label for="attendanceHour">Data da solicitação: </label>
+                                <input type="text" class="form-control" id="attendanceHour" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-floating details-field" style="margin-top:  24px" onload="updateHour();">
+                            <label for="reqMed">Requisição da medicação: </label>
+                            <textarea class="form-control" id="reqMed" name="reqMed" rows="4" cols="40"> </textarea>
+                        </div>
+
+                
+                        <div class="row mt-4" style="justify-content: center;">
+                            {% buttons %}
+                                <button type="menu" class="btn btn-secondary"><a href="{% url 'indexClinic' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                                <button type="menu" id="confirmButton" class="btn btn-success" style="color: white;" onclick="showButton();updateHour();">Confirmar</button>
+                                <button type="submit" class="btn btn-primary" id='btnNewMedRequest' disabled>Solicitar medicação</button>
+                            {% endbuttons %}
+                        </div>
+                </div>
+                    <br>
+                    <br>
+                
+        
+            </form>      
+        {% endif %}
+
+             
+    </div>
+
+    <script>
+
+        function showButton() {
+            
+            
+            document.getElementById('btnNewMedRequest').removeAttribute('disabled');
+            document.getElementById('confirmButton').setAttribute('disabled', 'disabled')
+        }
+
+        function updateHour() {
+            const now = Date.now();
+            const date = new Date(now);
+            const div = document.getElementById('attendanceHour');
+
+            const dateString = ("0" + date.getDate()).slice(-2) + "/" + ("0"+(date.getMonth()+1)).slice(-2) + "/" +
+                date.getFullYear() + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2);
+            
+            if (div) {
+                div.value = dateString;
+            }
+        }      
+    </script>  
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

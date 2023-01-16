@@ -1,0 +1,96 @@
+{% extends 'baseConsultorio.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Atendimentos pendentes</title>
+    <script type = "text/JavaScript">
+
+        function AutoRefresh() {
+            setTimeout("location.reload(true);", 15000);
+        }
+     </script>
+     <link rel="stylesheet" href="{% static '/css/style.css' %}">
+</head>
+<body onload="AutoRefresh();">
+    <div class='body-content'>
+            <br>
+            
+            <br>
+            {% bootstrap_messages %}
+            <br>
+       
+        
+            <form action="" method="get">
+                <div class="input-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="patient" id="patient" placeholder="Nome paciente" aria-label="paciente" aria-describedby="basic-addon1">
+                        <input type="date" name="filter" id="filter" class="form-control" placeholder="Pesquisar por data" aria-label="Pesquisar por data" aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                          <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
+                        </div>
+                    </div>
+                    
+                </div>
+            </form>
+                
+            
+            <a href="{% url 'atenderPacienteConsultorio' %}" id="attendanceUrl" style="visibility: hidden;"></a>
+            <br><br><br>
+
+        {% if attendances.length != 0 %}
+               
+                
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Nº ficha</th>
+                        <th scope="col">Nome completo</th>
+                        <th scope="col">Data de nascimento</th>
+                        <th scope="col">Data da entrada</th>
+                        <th scope="col">Prioridade</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for attendance in attendances %}
+                        <tr>
+                            <td scope="row">{{ attendance.num }}</td>
+                            <th scope="row">{{attendance.patient.name}}</th>
+                            <td scope="row">{{attendance.patient.birth_date}}</td>
+                            <td scope="row">{{attendance.created_at}}</td>
+                            <td scope="row">{{attendance.priority}}</td>
+                            <td scope="row">
+                                <button class="btn btn-primary" onclick="redirect('{{attendance.id}}')" >Atender</button>
+
+                            </td>
+
+                        </tr>
+                        {% endfor %} 
+                    </tbody>
+                </table>
+               
+            {% else %}
+                <div class="container">
+                    <h3 style="text-align: center;">Nenhum atendimento pendente!</h3>
+                </div>
+            {% endif %}
+
+             
+    </div>
+
+    <script>
+  
+        function redirect(id) {
+            const url = document.getElementById('attendanceUrl').href;
+            const query = `?id=${id}`;
+            document.location.reload(true);
+            window.open(url + query);
+        }
+    </script>
+
+
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends 'baseConsultorio.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Emitir atestado!</title>
+    <link rel="stylesheet" href="{% static '/css/stylecreatesicknote.css' %}">
+</head>
+<body>
+    <div class='body-content'>
+            <br>
+            {% bootstrap_messages %}
+            <br>
+            <form action="{% url 'emitirAtestado' %}" method="get">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="patient_span">Nome/CNS do paciente: </span>
+                    </div>
+                    <input list="patients" type="text" id="attendance_id" name="attendance_id" class="form-control" aria-label="Default" aria-describedby="attendance_id" onchange="this.form.submit()">
+                    <button class="btn btn-outline-secondary" type="submit" >Pesquisar</button>
+                </div>
+
+                <datalist id="patients">
+                    {% for attendance in attendances %}
+                        <option value="{{ attendance.id }}"> {{ attendance.patient }} </option>
+                    {% endfor %}   
+                </datalist>
+            </form>
+            <form action="{% url 'emitirAtestado' %}" method="post" class="form" autocomplete="on">
+                {% csrf_token %}
+                
+                <div id="patient_values">
+                        {% if attendance %}
+                            <input type="number" name="attendance_id" value="{{ attendance.id }}" style="visibility: hidden;">
+
+                            <div class="row custom-row">
+                                <div class="col-8 input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">Nome</span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="{{patient.name}}" disabled>
+                                </div>
+                                <div class="col-4 input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">Idade</span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" disabled value="{{patient.age}} anos">
+                                </div>
+
+                            </div>
+
+                            <div class="row custom-row">
+                                <div class="col-4 input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">CNS</span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" disabled value="{{patient.cns}}">
+                                </div>
+
+                                <div class="col-4 input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">Sexo</span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" disabled value="{{patient.gender}}">
+                                </div>
+
+                                <div class="col-4 input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">Data atendimento</span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" disabled value="{{patient.gender}}">
+                                </div>
+
+                            </div>
+
+                            <div class="div-box">
+                                <h4 class="div-box-title">Dados do atestado</h4>
+                                <div class="row custom-row mt-8">
+                                    <div class="col-4 input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">CID do paciente</span>
+                                        </div>
+                                        <input type="text" name="cid" class="form-control" id="cid" placeholder="CID" aria-label="Username" aria-describedby="basic-addon1" >
+                                    </div>
+    
+                                    <div class="col-4 input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">Nº Dias de atestado</span>
+                                        </div>
+                                        <input type="number" name="days" class="form-control" id="days" placeholder="Dias" aria-label="Username" aria-describedby="basic-addon1" >
+                                    </div>
+    
+                                    <div class="col-4 input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">Dias ext</span>
+                                        </div>
+                                        <input type="text" class="form-control" id="days_text" placeholder="Dias" aria-label="Username" name="days_text" aria-describedby="basic-addon1" >
+                                    </div>
+                                </div>
+
+                            </div>
+                            
+                        {% endif %}
+                
+                </div>
+                    <br>
+                    <br>
+                {% buttons %}
+                <div style="display: flex; justify-content: center; gap: 8px;">
+                    <button type="menu" class="btn btn-secondary"><a href="{% url 'indexClinic' %}" style="color: white; text-decoration:none">Voltar</a></button>
+                    <button type="submit" class="btn btn-success" id='btnNewAttendance'>Emitir atestado</button>
+                    {% if sick_note %}
+                        <a href="{% url 'downloadSickNote' sick_note %}" class="btn btn-primary">Download</a>
+                    {%endif%}
+                </div>
+
+                {% endbuttons %}
+                
+      
+            </form>     
+             
+    </div>
+
+    <script>
+
+        function showButton() {
+            const checked = document.getElementById('confirm').checked;
+    
+            if (checked)
+                document.getElementById('btnNewAttendance').style.visibility = 'visible';
+            else
+                document.getElementById('btnNewAttendance').style.visibility = 'hidden';
+        }
+
+        function updateHour() {
+            const now = Date.now();
+            const date = new Date(now);
+            const div = document.getElementById('attendanceHour');
+            if (div) {
+                div.value = date.toLocaleDateString() + ' às ' + date.toLocaleTimeString().slice(0,5);
+            }
+        }      
+    </script>  
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}

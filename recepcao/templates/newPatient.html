@@ -1,0 +1,55 @@
+{% extends 'baseReception.html'%}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+    <title>Sign-up</title>
+    <script src="{% static 'js/newPatient.js' %}"></script>
+</head>
+<body>
+    <div class='container'>
+        <center>
+            <br>
+            {% bootstrap_messages %}
+            {% if form.errors %}
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>{{ error|escape }}</strong>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>{{ error|escape }}</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+
+            {% endif %}
+            <br>
+            <form action="{% url 'newPatient' %}" method="post" class="form" autocomplete="on">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% buttons %}
+                    <button type="menu" class="btn btn-secondary" onclick="backToHome()">Voltar</button>
+                    <button type="reset" class="btn btn-warning" style="color: white;">Limpar dados</button>
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                {% endbuttons %}
+                
+      
+            </form>      
+
+        </center>
+             
+    </div>
+
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>
+{% endblock %}
